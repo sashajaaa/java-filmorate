@@ -18,7 +18,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 public class UserController extends Controller<User> {
-
     @GetMapping
     @Override
     public Collection<User> findAll() {

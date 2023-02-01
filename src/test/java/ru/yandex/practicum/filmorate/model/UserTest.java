@@ -24,6 +24,7 @@ class UserTest {
     void createUserWithBadEmail_shouldShowErrorMessage() {
         User user = new User(10, "sashajaaa.ru", "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", user, User.class);
+
         assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
     }
 
@@ -31,6 +32,7 @@ class UserTest {
     void createUserWithEmptyLogin_shouldShowErrorMessage() {
         User user = new User(10, "sashajaaa@yandex.ru", " ", "Aleksandr", LocalDate.now().minusYears(35));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", user, User.class);
+
         assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
     }
 
@@ -40,6 +42,7 @@ class UserTest {
         String login = "sashajaaa";
         User user = new User(id, "sashajaaa@yandex.ru", login, null, LocalDate.now().minusYears(35));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", user, User.class);
+
         assertEquals(login, response.getBody().getName());
     }
 
@@ -47,6 +50,7 @@ class UserTest {
     void createFutureBirthUser_shouldShowErrorMessage() {
         User user = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().plusYears(35));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", user, User.class);
+
         assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
     }
 
@@ -58,6 +62,7 @@ class UserTest {
         User user2 = new User(1, null, "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35));
         HttpEntity<User> entity = new HttpEntity<User>(user2);
         ResponseEntity<User> response2 = restTemplate.exchange("/users", HttpMethod.PUT, entity, User.class);
+
         assertEquals("400 BAD_REQUEST", response2.getStatusCode().toString());
     }
 
@@ -68,6 +73,7 @@ class UserTest {
         User user = new User(10, "sashajaaa@yandex.ru", " ", "Aleksandr", LocalDate.now().minusYears(35));
         HttpEntity<User> entity = new HttpEntity<User>(user);
         ResponseEntity<User> response2 = restTemplate.exchange("/users", HttpMethod.PUT, entity, User.class);
+
         assertEquals("400 BAD_REQUEST", response2.getStatusCode().toString());
     }
 
@@ -78,6 +84,7 @@ class UserTest {
         User user = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().plusYears(35));
         HttpEntity<User> entity = new HttpEntity<User>(user);
         ResponseEntity<User> response2 = restTemplate.exchange("/users", HttpMethod.PUT, entity, User.class);
+
         assertEquals("400 BAD_REQUEST", response2.getStatusCode().toString());
     }
 }

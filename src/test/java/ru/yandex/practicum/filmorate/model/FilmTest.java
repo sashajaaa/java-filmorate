@@ -74,7 +74,7 @@ class FilmTest {
 
     @Test
     void updateFilmWithTooLongDescription_shouldShowErrorMessage() {
-        Film film = new Film(190, "Movie", "impudicus", LocalDate.now().minusYears(14), 180);
+        Film film = new Film(190, "Movie", "Interesting", LocalDate.now().minusYears(14), 180);
         restTemplate.postForLocation("/films", film);
         String description = "eargtpearogm,ae[org," +
                 "aergeargeargearg" +
@@ -84,7 +84,7 @@ class FilmTest {
                 "e5mn77w5iimnwim5w7inw57mniwmniw46niw46nmiw46mnwniw446mniw" +
                 "wn6i4mnw6im4w6miw46mniw46imw46imw46imw46mnw46mniw46inmw46im" +
                 "fwergbwargnawrnarwenaenheatrhnaerhneaswadfgawer";
-        Film film2 = Film.builder().name("MACBETH").description(description).
+        Film film2 = Film.builder().name("Avatar").description(description).
                 releaseDate(LocalDate.now().minusYears(13)).duration(180).build();
         HttpEntity<Film> entity = new HttpEntity<Film>(film2);
         ResponseEntity<Film> response2 = restTemplate.exchange("/films", HttpMethod.PUT, entity, Film.class);
@@ -96,7 +96,7 @@ class FilmTest {
     void updateFilmWithMinusDuration_shouldShowErrorMessage() {
         Film film = new Film(190, "Movie", "Interesting", LocalDate.now().minusYears(14), 180);
         ResponseEntity<Film> response = restTemplate.postForEntity("/films", film, Film.class);
-        Film film2 = new Film(1, "Movie", "impudicus", LocalDate.now().minusYears(14), -180);
+        Film film2 = new Film(1, "Movie", "Interesting", LocalDate.now().minusYears(14), -180);
         HttpEntity<Film> entity = new HttpEntity<Film>(film2);
         ResponseEntity<Film> response2 = restTemplate.exchange("/films", HttpMethod.PUT, entity, Film.class);
 
