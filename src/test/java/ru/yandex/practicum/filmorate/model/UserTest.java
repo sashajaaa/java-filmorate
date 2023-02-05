@@ -1,20 +1,17 @@
 package ru.yandex.practicum.filmorate.model;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserTest {
     @Autowired
@@ -60,7 +57,7 @@ class UserTest {
         ResponseEntity<User> response = restTemplate.postForEntity("/users", usr, User.class);
 
         User user2 = new User(1, null, "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35));
-        HttpEntity<User> entity = new HttpEntity<User>(user2);
+        HttpEntity<User> entity = new HttpEntity<>(user2);
         ResponseEntity<User> response2 = restTemplate.exchange("/users", HttpMethod.PUT, entity, User.class);
 
         assertEquals("400 BAD_REQUEST", response2.getStatusCode().toString());
@@ -71,7 +68,7 @@ class UserTest {
         User usr = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", usr, User.class);
         User user = new User(10, "sashajaaa@yandex.ru", " ", "Aleksandr", LocalDate.now().minusYears(35));
-        HttpEntity<User> entity = new HttpEntity<User>(user);
+        HttpEntity<User> entity = new HttpEntity<>(user);
         ResponseEntity<User> response2 = restTemplate.exchange("/users", HttpMethod.PUT, entity, User.class);
 
         assertEquals("400 BAD_REQUEST", response2.getStatusCode().toString());
@@ -82,7 +79,7 @@ class UserTest {
         User usr = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", usr, User.class);
         User user = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().plusYears(35));
-        HttpEntity<User> entity = new HttpEntity<User>(user);
+        HttpEntity<User> entity = new HttpEntity<>(user);
         ResponseEntity<User> response2 = restTemplate.exchange("/users", HttpMethod.PUT, entity, User.class);
 
         assertEquals("400 BAD_REQUEST", response2.getStatusCode().toString());

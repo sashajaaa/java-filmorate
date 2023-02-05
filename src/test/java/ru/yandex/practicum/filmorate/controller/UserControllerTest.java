@@ -2,13 +2,12 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UserControllerTest {
@@ -32,20 +31,15 @@ class UserControllerTest {
     @Test
     void createFutureBirthUser_shouldShowErrorMessage() {
         User user = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().plusYears(35));
-        ValidationException e = assertThrows(ValidationException.class, new Executable() {
-            @Override
-            public void execute() {
-                userController.create(user);
-            }
-        });
+        ValidationException e = assertThrows(ValidationException.class, () -> userController.create(user));
 
         assertEquals("The object form is filled in incorrectly", e.getMessage());
     }
 
     @Test
     void updateUserNameToEmpty_shouldSetNameToLogin() {
-        User usr = new User(1, "sashajaaa@yandex.ru", "sashajaaa", "", LocalDate.now().minusYears(35));
-        userController.create(usr);
+        User user1 = new User(1, "sashajaaa@yandex.ru", "sashajaaa", "", LocalDate.now().minusYears(35));
+        userController.create(user1);
         int id = 1;
         String login = "sashajaaa";
         User user = new User(id, "sashajaaa@yandex.ru", login, null, LocalDate.now().minusYears(35));
@@ -57,16 +51,11 @@ class UserControllerTest {
 
     @Test
     void updateFutureBirthUser_shouldShowErrorMessage() {
-        User usr = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35));
-        userController.create(usr);
+        User user1 = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35));
+        userController.create(user1);
         User user = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().plusYears(5));
-        ValidationException ex = assertThrows(ValidationException.class, new Executable() {
-            @Override
-            public void execute() {
-                userController.update(user);
-            }
-        });
+        ValidationException e = assertThrows(ValidationException.class, () -> userController.update(user));
 
-        assertEquals("Object update form was filled out incorrectly", ex.getMessage());
+        assertEquals("Object update form was filled out incorrectly", e.getMessage());
     }
 }

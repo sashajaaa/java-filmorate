@@ -115,3 +115,18 @@ feat:
 -Создан пакет controller, содержащий файлы классов Controller, UserController, FilmController;  
 -Создан пакет exception, содержащий файл класса ValidationException;  
 -Созданы тесты методов.  
+
+#### Коммит №9.2:
+refactor:  
+-Переработан класс User;  
+-Переработан класс Controller;  
+-Переработан класс FilmController;  
+-Переработан класс UserController;  
+-Переработан класс FilmControllerTest;  
+-Переработан класс UserControllerTest;  
+-Переработан класс FilmTest;  
+-Переработан класс UserTest;  
+-Отредактирован файл pom.xml.  
+
+delete:  
+-Удалён файл FilmorateApplicationTests.
