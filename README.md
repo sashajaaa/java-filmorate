@@ -129,4 +129,11 @@ refactor:
 -Отредактирован файл pom.xml.  
 
 delete:  
--Удалён файл FilmorateApplicationTests.
+-Удалён файл FilmorateApplicationTests.  
+
+#### Коммит №9.3:
+refactor:  
+-Переработан класс Controller;
+-Переработан класс UserController;  
+-Переформатирован класс FilmorateApplication;  
+-Переработан класс UserControllerTest.  

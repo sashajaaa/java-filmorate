@@ -28,6 +28,7 @@ public abstract class Controller<T extends Model> {
     public T create(@Valid @RequestBody T obj) {
         validate(obj, "The object form is filled in incorrectly");
         obj.setId(setId());
+        fixVoidName(obj);
         entities.put(obj.getId(), obj);
         log.info("Object successfully added: " + obj);
         return obj;
@@ -36,11 +37,12 @@ public abstract class Controller<T extends Model> {
     @PutMapping
     public T update(@Valid @RequestBody T obj) {
         validate(obj, "Object update form was filled out incorrectly");
-        if (entities.containsKey(obj.getId())) {
+        if (!entities.containsKey(obj.getId())) {
+            throw new ValidationException("Object is not in list");
+        } else {
+            fixVoidName(obj);
             entities.put(obj.getId(), obj);
             log.info("Object successfully updated: " + obj);
-        } else {
-            throw new ValidationException("Object is not in list");
         }
         return obj;
     }
@@ -50,13 +52,16 @@ public abstract class Controller<T extends Model> {
         return id;
     }
 
-    public void validate(T obj, String message) {
+    private void validate(T obj, String message) {
         if (!doValidate(obj)) {
             throw new ValidationException(message);
         }
     }
 
-    public boolean doValidate(T obj) {
+    protected boolean doValidate(T obj) {
         return true;
+    }
+
+    public void fixVoidName(T obj){
     }
 }
