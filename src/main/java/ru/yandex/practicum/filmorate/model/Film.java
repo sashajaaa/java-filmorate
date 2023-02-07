@@ -15,13 +15,17 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Film extends Model {
     private int id;
+
     @NotBlank
     private String name;
+
     @NotBlank
     @Size(max = 200)
     private String description;
+
     @NotNull
     private LocalDate releaseDate;
+
     @PositiveOrZero
     private int duration;
 }

@@ -137,3 +137,7 @@ refactor:
 -Переработан класс UserController;  
 -Переформатирован класс FilmorateApplication;  
 -Переработан класс UserControllerTest.  
+
+#### Коммит №9.4:
+refactor:  
+-Переработан класс Controller.  

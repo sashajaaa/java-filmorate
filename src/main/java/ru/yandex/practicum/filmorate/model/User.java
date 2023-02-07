@@ -15,12 +15,15 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class User extends Model {
     private int id;
+
     @NotBlank
     @Email
     private String email;
+
     @NotBlank
     private String login;
     private String name;
+
     @PastOrPresent
     @NotNull
     private LocalDate birthday;
