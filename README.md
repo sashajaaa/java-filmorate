@@ -227,3 +227,7 @@ refactor:
 -Переработаны классы UserController и FilmController;  
 -Переработаны классы AbstractService и UserService;  
 -Переработан класс AbstractStorage.
+
+#### Коммит №10.3:
+refactor:  
+-Переработаны классы UserController и FilmController;

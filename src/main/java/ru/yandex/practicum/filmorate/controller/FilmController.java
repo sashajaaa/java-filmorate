@@ -15,6 +15,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -26,6 +27,13 @@ public class FilmController extends Controller<Film> {
     @Autowired
     public FilmController(FilmService filmService) {
         this.filmService = filmService;
+    }
+
+    @GetMapping
+    @Override
+    public Collection<Film> getAll() {
+        log.info("List of all movies: " + filmService.getAll().size());
+        return filmService.getAll();
     }
 
     @PostMapping

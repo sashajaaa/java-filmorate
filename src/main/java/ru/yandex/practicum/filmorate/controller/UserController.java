@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -25,6 +26,13 @@ public class UserController extends Controller<User> {
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping
+    @Override
+    public Collection<User> getAll() {
+        log.info("List of all objects: " + userService.getAll().size());
+        return userService.getAll();
     }
 
     @PostMapping
