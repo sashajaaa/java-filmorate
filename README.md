@@ -221,3 +221,9 @@ feat:
 -Создан пакет service с классами AbstractService, FilmService и UserService;  
 -Создан пакет с интерфейсами Storage, UserStorage и FilmStorage и классами AbstractStorage, InMemoryFilmStorage и InMemoryUserStorage;  
 -Создан пакет utility с классом IdGenerator.  
+
+#### Коммит №10.2:  
+refactor:  
+-Переработаны классы UserController и FilmController;  
+-Переработаны классы AbstractService и UserService;  
+-Переработан класс AbstractStorage.

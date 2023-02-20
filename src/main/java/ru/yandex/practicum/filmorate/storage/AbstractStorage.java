@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Model;
 
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public abstract class AbstractStorage<T extends Model> implements Storage<T> {
     @Override
     public T update(T obj) {
         if (!entities.containsKey(obj.getId())) {
-            throw new ValidationException("Object is not in list");
+            throw new NotFoundException("Object is not in list");
         }
         entities.put(obj.getId(), obj);
         log.info("Object successfully updated: " + obj);

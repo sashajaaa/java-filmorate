@@ -38,7 +38,6 @@ class UserControllerTest {
         String login = "sashajaaa";
         User user = new User(id, "sashajaaa@yandex.ru", login, null, LocalDate.now().minusYears(35));
         userController.update(user);
-        System.out.println(userController.getAll());
 
         assertEquals(login, userController.getUserById(id).getName());
     }

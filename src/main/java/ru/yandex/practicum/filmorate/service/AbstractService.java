@@ -55,7 +55,6 @@ public abstract class AbstractService<T extends Model> {
         return true;
     }
 
-    protected String setEmptyUserName(T obj) {
-        return " ";
+    protected void setEmptyUserName(T obj) {
     }
 }

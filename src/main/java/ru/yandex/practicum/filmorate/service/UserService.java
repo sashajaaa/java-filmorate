@@ -20,17 +20,14 @@ public class UserService extends AbstractService<User> {
     }
 
     @Override
-    public String setEmptyUserName(User user) {
-        if (user.getName().isBlank()) {
+    public void setEmptyUserName(User user) {
+        if (user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) {
             user.setName(user.getLogin());
-            return user.getLogin();
         }
-        return user.getName();
     }
 
     public void addFriend(Integer userId, Integer friendId) {
-        if (storage.getById(userId) == null ||
-                storage.getById(friendId) == null) {
+        if (storage.getById(userId) == null || storage.getById(friendId) == null) {
             throw new NotFoundException("Object is not in list");
         }
         getById(userId).addFriend(friendId);
@@ -38,8 +35,7 @@ public class UserService extends AbstractService<User> {
     }
 
     public void removeFriend(Integer userId, Integer friendId) {
-        if (storage.getById(userId) == null ||
-                storage.getById(friendId) == null) {
+        if (storage.getById(userId) == null || storage.getById(friendId) == null) {
             throw new NotFoundException("Object is not in list");
         }
         getById(userId).deleteFriend(friendId);
