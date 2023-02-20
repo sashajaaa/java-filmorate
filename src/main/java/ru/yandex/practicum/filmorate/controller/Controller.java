@@ -1,66 +1,55 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Model;
+import ru.yandex.practicum.filmorate.service.AbstractService;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 public abstract class Controller<T extends Model> {
-    protected final Map<Integer, T> entities = new HashMap<>();
-    private int id = 0;
+    AbstractService service;
+
+    @Autowired
+    public Controller(AbstractService service) {
+        this.service = service;
+    }
+
+    @Autowired
+    protected Controller() {
+    }
 
     @GetMapping
-    public Collection<T> findAll() {
-        log.info("List of all objects: " + entities.size());
-        return entities.values();
+    public Collection<T> getAll() {
+        log.info("List of all objects: " + service.getAll().size());
+        return service.getAll();
     }
 
     @PostMapping
     public T create(@Valid @RequestBody T obj) {
-        validate(obj, "The object form is filled in incorrectly");
-        obj.setId(setId());
-        setEmptyUserName(obj);
-        entities.put(obj.getId(), obj);
+        service.create(obj);
         log.info("Object successfully added: " + obj);
         return obj;
     }
 
     @PutMapping
     public T update(@Valid @RequestBody T obj) {
-        validate(obj, "Object update form was filled out incorrectly");
-        if (!entities.containsKey(obj.getId())) {
-            throw new ValidationException("Object is not in list");
-        }
-        setEmptyUserName(obj);
-        entities.put(obj.getId(), obj);
+        service.update(obj);
         log.info("Object successfully updated: " + obj);
         return obj;
     }
 
-    private int setId() {
-        id += 1;
-        return id;
-    }
-
-    private void validate(T obj, String message) {
-        if (!doValidate(obj)) {
-            throw new ValidationException(message);
-        }
-    }
-
-    protected boolean doValidate(T obj) {
-        return true;
-    }
-
-    protected void setEmptyUserName(T obj) {
+    @DeleteMapping("/{id}")
+    public void deleteFilmById(@PathVariable Integer id) {
+        log.debug("Deleted object with id: ", id);
+        service.delete(id);
     }
 }
