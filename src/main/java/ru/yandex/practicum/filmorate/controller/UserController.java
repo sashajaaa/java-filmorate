@@ -5,16 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
-import javax.validation.Valid;
-import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -25,36 +21,8 @@ public class UserController extends Controller<User> {
 
     @Autowired
     public UserController(UserService userService) {
+        super(userService);
         this.userService = userService;
-    }
-
-    @GetMapping
-    @Override
-    public Collection<User> getAll() {
-        log.info("List of all objects: " + userService.getAll().size());
-        return userService.getAll();
-    }
-
-    @PostMapping
-    @Override
-    public User create(@Valid @RequestBody User user) {
-        userService.create(user);
-        log.info("User successfully added: " + user);
-        return user;
-    }
-
-    @PutMapping
-    @Override
-    public User update(@Valid @RequestBody User user) {
-        userService.update(user);
-        log.info("User successfully updated: " + user);
-        return user;
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteFilmById(@PathVariable Integer id) {
-        log.debug("Deleted user with id: ", id);
-        service.delete(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")

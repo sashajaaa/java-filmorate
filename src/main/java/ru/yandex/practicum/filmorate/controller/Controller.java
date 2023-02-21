@@ -23,10 +23,6 @@ public abstract class Controller<T extends Model> {
         this.service = service;
     }
 
-    @Autowired
-    protected Controller() {
-    }
-
     @GetMapping
     public Collection<T> getAll() {
         log.info("List of all objects: " + service.getAll().size());
