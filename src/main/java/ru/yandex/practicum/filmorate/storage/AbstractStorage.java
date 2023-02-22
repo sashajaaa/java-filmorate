@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Model;
 
@@ -10,8 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
+@Component
 public abstract class AbstractStorage<T extends Model> implements Storage<T> {
     protected final Map<Integer, T> entities = new HashMap<>();
+    private int id = 1;
 
     @Override
     public Collection<T> getAll() {
@@ -21,6 +24,7 @@ public abstract class AbstractStorage<T extends Model> implements Storage<T> {
 
     @Override
     public T create(T obj) {
+        obj.setId(id++);
         entities.put(obj.getId(), obj);
         return obj;
     }
@@ -46,6 +50,7 @@ public abstract class AbstractStorage<T extends Model> implements Storage<T> {
         return obj;
     }
 
+    @Override
     public T getById(Integer id) {
         T obj;
         if (entities.containsKey(id)) {

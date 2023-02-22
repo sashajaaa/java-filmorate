@@ -33,6 +33,17 @@ public class FilmService extends AbstractService<Film> {
         return !film.getReleaseDate().isBefore(DATE_LIMIT);
     }
 
+    /*
+
+
+    public List<Film> getPopular(Integer count) {
+        return storage.getAll()
+                .stream()
+                .limit(count)
+                .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
+                .collect(Collectors.toList());
+    }
+     */
     public void addLike(Integer filmId, Integer userId) {
         if (storage.getById(filmId) == null || userStorage.getById(userId) == null) {
             throw new NotFoundException("Object is not in list");
@@ -48,12 +59,10 @@ public class FilmService extends AbstractService<Film> {
     }
 
     public List<Film> getPopular(Integer count) {
-        return getSortedFilms().stream().limit(count).collect(Collectors.toList());
-    }
-
-    public List<Film> getSortedFilms() {
-        return storage.getAll().stream().
-                sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size()).
-                collect(Collectors.toList());
+        return storage.getAll()
+                .stream()
+                .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
+                .limit(count)
+                .collect(Collectors.toList());
     }
 }

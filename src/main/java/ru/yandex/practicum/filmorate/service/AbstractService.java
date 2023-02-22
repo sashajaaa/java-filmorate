@@ -5,19 +5,16 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Model;
 import ru.yandex.practicum.filmorate.storage.Storage;
-import ru.yandex.practicum.filmorate.utility.IdGenerator;
 
 import java.util.Collection;
 
 @Slf4j
 @Service
 public abstract class AbstractService<T extends Model> {
-    protected final IdGenerator idGenerator;
     Storage<T> storage;
 
     protected AbstractService(Storage<T> storage) {
         this.storage = storage;
-        this.idGenerator = new IdGenerator();
     }
 
     public Collection<T> getAll() {
@@ -27,7 +24,6 @@ public abstract class AbstractService<T extends Model> {
     public T create(T obj) {
         validate(obj, "The object form is filled in incorrectly");
         setEmptyUserName(obj);
-        obj.setId(idGenerator.getId());
         return storage.create(obj);
     }
 

@@ -230,4 +230,15 @@ refactor:
 
 #### Коммит №10.3:
 refactor:  
--Переработаны классы UserController и FilmController;
+-Переработаны классы UserController и FilmController;  
+
+#### Коммит №10.4:  
+refactor:  
+-Переработан класс Film;  
+-Переработаны классы AbstractService и FilmService;  
+-Переработан класс AbstractStorage;  
+-Переработан класс FilmControllerTest.  
+
+delete:  
+-Удалён пакет util с классом IdGenerator.  
+
