@@ -27,7 +27,7 @@ class UserControllerTest {
         User user = new User(id, "sashajaaa@yandex.ru", login, null, LocalDate.now().minusYears(35));
         userController.create(user);
 
-        assertEquals(login, userController.getUserById(id).getName());
+        assertEquals(login, userController.getById(id).getName());
     }
 
     @Test
@@ -39,6 +39,6 @@ class UserControllerTest {
         User user = new User(id, "sashajaaa@yandex.ru", login, null, LocalDate.now().minusYears(35));
         userController.update(user);
 
-        assertEquals(login, userController.getUserById(id).getName());
+        assertEquals(login, userController.getById(id).getName());
     }
 }
