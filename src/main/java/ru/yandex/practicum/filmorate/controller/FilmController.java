@@ -43,10 +43,4 @@ public class FilmController extends Controller<Film> {
         log.info("Requested a list of popular movies");
         return filmService.getPopular(count);
     }
-
-    @GetMapping("/{id}")
-    public Film getFilmById(@PathVariable Integer id) {
-        log.info("Requested movie with id:" + id);
-        return filmService.getById(id);
-    }
 }

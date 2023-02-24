@@ -11,7 +11,7 @@ import java.util.Collection;
 @Slf4j
 @Service
 public abstract class AbstractService<T extends Model> {
-    Storage<T> storage;
+    protected final Storage<T> storage;
 
     protected AbstractService(Storage<T> storage) {
         this.storage = storage;
@@ -23,13 +23,13 @@ public abstract class AbstractService<T extends Model> {
 
     public T create(T obj) {
         validate(obj, "The object form is filled in incorrectly");
-        setEmptyUserName(obj);
+        preSave(obj);
         return storage.create(obj);
     }
 
     public T update(T obj) {
         validate(obj, "Object update form was filled out incorrectly");
-        setEmptyUserName(obj);
+        preSave(obj);
         return storage.update(obj);
     }
 
@@ -51,6 +51,6 @@ public abstract class AbstractService<T extends Model> {
         return true;
     }
 
-    protected void setEmptyUserName(T obj) {
+    protected void preSave(T obj) {
     }
 }

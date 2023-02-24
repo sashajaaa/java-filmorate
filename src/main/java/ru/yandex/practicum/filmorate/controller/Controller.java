@@ -16,10 +16,10 @@ import java.util.Collection;
 
 @Slf4j
 public abstract class Controller<T extends Model> {
-    AbstractService service;
+    private final AbstractService service;
 
     @Autowired
-    public Controller(AbstractService service) {
+    protected Controller(AbstractService service) {
         this.service = service;
     }
 
@@ -45,7 +45,13 @@ public abstract class Controller<T extends Model> {
 
     @DeleteMapping("/{id}")
     public void deleteFilmById(@PathVariable Integer id) {
-        log.debug("Deleted object with id: ", id);
+        log.info("Deleted object with id: {}", id);
         service.delete(id);
+    }
+
+    @GetMapping("/{id}")
+    public T getById (@PathVariable Integer id) {
+        log.info("Requested object with id: " + id);
+        return (T) service.getById(id);
     }
 }

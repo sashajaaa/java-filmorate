@@ -242,3 +242,8 @@ refactor:
 delete:  
 -Удалён пакет util с классом IdGenerator.  
 
+#### Коммит №10.5:
+refactor:  
+-Переработаны классы Controller, ErrorHandler, FilmController и UserController;  
+-Переработаны классы AbstractService, FilmService и UserService;  
+-Переработан класс AbstractStorage.  

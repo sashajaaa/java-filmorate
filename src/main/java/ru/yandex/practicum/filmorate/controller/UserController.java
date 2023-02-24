@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class UserController extends Controller<User> {
-    UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -45,13 +45,7 @@ public class UserController extends Controller<User> {
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
-        log.info("Common friends of users with id" + id + " и " + otherId + userService.getCommonFriends(id, otherId));
+        log.info("Common friends of users with id " + id + " и " + otherId + userService.getCommonFriends(id, otherId));
         return userService.getCommonFriends(id, otherId);
-    }
-
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable Integer id) {
-        log.info("User with id " + id + " " + userService.getById(id));
-        return userService.getById(id);
     }
 }

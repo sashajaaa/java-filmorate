@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.Storage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Comparator;
 import java.util.List;
@@ -15,12 +15,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserService extends AbstractService<User> {
     @Autowired
-    public UserService(Storage<User> storage) {
+    public UserService(UserStorage storage) {
         super(storage);
     }
 
     @Override
-    public void setEmptyUserName(User user) {
+    protected void preSave(User user) {
         if (user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
@@ -47,10 +47,10 @@ public class UserService extends AbstractService<User> {
             throw new NotFoundException("Object is not in list");
         }
         User user = getById(userId);
-        return user.getFriends().stream().
-                map(storage::getById).
-                sorted(Comparator.comparingInt(User::getId)).
-                collect(Collectors.toList());
+        return user.getFriends().stream()
+                .map(storage::getById)
+                .sorted(Comparator.comparingInt(User::getId))
+                .collect(Collectors.toList());
     }
 
     public List<User> getCommonFriends(Integer user1Id, Integer user2Id) {

@@ -41,13 +41,10 @@ public abstract class AbstractStorage<T extends Model> implements Storage<T> {
 
     @Override
     public T delete(Integer id) {
-        T obj;
-        if (entities.containsKey(id)) {
-            obj = entities.get(id);
-        } else {
+        if (!entities.containsKey(id)) {
             throw new NotFoundException("Object is not in list");
         }
-        return obj;
+        return entities.get(id);
     }
 
     @Override
