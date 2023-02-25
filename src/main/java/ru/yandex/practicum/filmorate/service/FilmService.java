@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,11 +31,13 @@ public class FilmService extends AbstractService<Film> {
     public boolean doValidate(Film film) {
         return !film.getReleaseDate().isBefore(DATE_LIMIT);
     }
+
     public void addLike(Integer filmId, Integer userId) {
         if (storage.getById(filmId) == null || userStorage.getById(userId) == null) {
             throw new NotFoundException("Object is not in list");
         }
         getById(filmId).addLike(userId);
+        log.info("Like successfully added");
     }
 
     public void removeLike(Integer filmId, Integer userId) {
@@ -42,12 +45,14 @@ public class FilmService extends AbstractService<Film> {
             throw new NotFoundException("Object is not in list");
         }
         getById(filmId).deleteLike(userId);
+        log.info("Like successfully removed");
     }
 
     public List<Film> getPopular(Integer count) {
+        log.info("Requested a list of popular movies");
         return storage.getAll()
                 .stream()
-                .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
+                .sorted(Comparator.comparing(f -> f.getLikes().size(), Comparator.reverseOrder()))
                 .limit(count)
                 .collect(Collectors.toList());
     }

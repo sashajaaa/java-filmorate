@@ -21,7 +21,7 @@ public class UserService extends AbstractService<User> {
 
     @Override
     protected void preSave(User user) {
-        if (user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) {
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
     }
@@ -32,6 +32,7 @@ public class UserService extends AbstractService<User> {
         }
         getById(userId).addFriend(friendId);
         getById(friendId).addFriend(userId);
+        log.info("Friend successfully added");
     }
 
     public void removeFriend(Integer userId, Integer friendId) {
@@ -40,6 +41,7 @@ public class UserService extends AbstractService<User> {
         }
         getById(userId).deleteFriend(friendId);
         getById(friendId).deleteFriend(userId);
+        log.info("Friend successfully removed");
     }
 
     public List<User> getFriends(Integer userId) {
@@ -47,7 +49,9 @@ public class UserService extends AbstractService<User> {
             throw new NotFoundException("Object is not in list");
         }
         User user = getById(userId);
-        return user.getFriends().stream()
+        log.info("Friends of user with id " + userId);
+        return user.getFriends()
+                .stream()
                 .map(storage::getById)
                 .sorted(Comparator.comparingInt(User::getId))
                 .collect(Collectors.toList());
@@ -60,8 +64,11 @@ public class UserService extends AbstractService<User> {
         }
         List<User> userSet1 = getFriends(user1Id);
         List<User> userSet2 = getFriends(user2Id);
-        return userSet1.stream().filter(userSet2::contains).
-                sorted(Comparator.comparingInt(User::getId)).
-                collect(Collectors.toList());
+        log.info("Common friends of users with id " + user1Id + " и " + user2Id);
+        return userSet1
+                .stream()
+                .filter(userSet2::contains)
+                .sorted(Comparator.comparingInt(User::getId))
+                .collect(Collectors.toList());
     }
 }

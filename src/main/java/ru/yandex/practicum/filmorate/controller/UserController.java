@@ -28,24 +28,20 @@ public class UserController extends Controller<User> {
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.addFriend(id, friendId);
-        log.info("Friend successfully added");
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.removeFriend(id, friendId);
-        log.info("Friend successfully removed");
     }
 
     @GetMapping("/{id}/friends")
     public List<User> getFriends(@PathVariable Integer id) {
-        log.info("Friends of user with id " + id + userService.getFriends(id));
         return userService.getFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
-        log.info("Common friends of users with id " + id + " и " + otherId + userService.getCommonFriends(id, otherId));
         return userService.getCommonFriends(id, otherId);
     }
 }

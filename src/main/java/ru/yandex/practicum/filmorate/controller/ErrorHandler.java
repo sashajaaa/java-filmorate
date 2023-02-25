@@ -14,36 +14,33 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
-        log.error(HttpStatus.BAD_REQUEST.toString() + e);
-        return new ErrorResponse(e.getMessage()
-        );
+        log.error(HttpStatus.BAD_REQUEST.toString(), e);
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(final NotFoundException e) {
-        log.error(HttpStatus.NOT_FOUND.toString() + e);
-        return new ErrorResponse(e.getMessage()
-        );
+        log.error(HttpStatus.NOT_FOUND.toString(), e);
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleRunTimeException(final RuntimeException e){
-        log.error(HttpStatus.INTERNAL_SERVER_ERROR.toString() + e);
-        return new ErrorResponse(e.getMessage()
-        );
-    }
-}
-
-class ErrorResponse {
-    private final String error;
-
-    public ErrorResponse(String error) {
-        this.error = error;
+        log.error(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e);
+        return new ErrorResponse(e.getMessage());
     }
 
-    public String getError() {
-        return error;
+    private static class ErrorResponse {
+        private final String error;
+
+        public ErrorResponse(String error) {
+            this.error = error;
+        }
+
+        public String getError() {
+            return error;
+        }
     }
 }

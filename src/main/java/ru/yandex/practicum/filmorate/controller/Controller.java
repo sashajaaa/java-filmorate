@@ -16,42 +16,37 @@ import java.util.Collection;
 
 @Slf4j
 public abstract class Controller<T extends Model> {
-    private final AbstractService service;
+    private final AbstractService<T> service;
 
     @Autowired
-    protected Controller(AbstractService service) {
+    protected Controller(AbstractService<T> service) {
         this.service = service;
     }
 
     @GetMapping
     public Collection<T> getAll() {
-        log.info("List of all objects: " + service.getAll().size());
         return service.getAll();
     }
 
     @PostMapping
     public T create(@Valid @RequestBody T obj) {
         service.create(obj);
-        log.info("Object successfully added: " + obj);
         return obj;
     }
 
     @PutMapping
     public T update(@Valid @RequestBody T obj) {
         service.update(obj);
-        log.info("Object successfully updated: " + obj);
         return obj;
     }
 
     @DeleteMapping("/{id}")
-    public void deleteFilmById(@PathVariable Integer id) {
-        log.info("Deleted object with id: {}", id);
+    public void deleteById(@PathVariable Integer id) {
         service.delete(id);
     }
 
     @GetMapping("/{id}")
     public T getById (@PathVariable Integer id) {
-        log.info("Requested object with id: " + id);
-        return (T) service.getById(id);
+        return service.getById(id);
     }
 }

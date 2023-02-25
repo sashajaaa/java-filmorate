@@ -29,18 +29,15 @@ public class FilmController extends Controller<Film> {
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.addLike(id, userId);
-        log.info("Like successfully added");
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.removeLike(id, userId);
-        log.info("Like successfully removed");
     }
 
     @GetMapping("/popular")
     public List<Film> getPopular(@RequestParam(defaultValue = "10") Integer count) {
-        log.info("Requested a list of popular movies");
         return filmService.getPopular(count);
     }
 }
