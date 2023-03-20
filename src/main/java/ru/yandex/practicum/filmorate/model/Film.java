@@ -1,21 +1,19 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Builder(toBuilder = true)
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class Film extends Model {
     private int id;
 
@@ -32,8 +30,12 @@ public class Film extends Model {
     @PositiveOrZero
     private int duration;
 
+    private Set<Genre> genres = new HashSet<>();
+
+    private RatingMpa mpa;
+
     @JsonIgnore
-    private final Set<Integer> likes = new HashSet<>();
+    final private Set<Integer> likes = new HashSet<>();
 
     public void addLike(Integer id) {
         likes.add(id);
@@ -41,5 +43,17 @@ public class Film extends Model {
 
     public void deleteLike(Integer id) {
         likes.remove(id);
+    }
+
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
+
+    public void removeAllGenres() {
+        genres.clear();
+    }
+
+    public void removeGenre(Genre genre) {
+        genres.remove(genre);
     }
 }
