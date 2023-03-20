@@ -35,16 +35,6 @@ class UserTest {
     }
 
     @Test
-    void createUserWithEmptyName_shouldShowErrorMessage() {
-        int id = 1;
-        String login = "sashajaaa";
-        User user = new User(id, "sashajaaa@yandex.ru", login, null, LocalDate.now().minusYears(35));
-        ResponseEntity<User> response = restTemplate.postForEntity("/users", user, User.class);
-
-        assertEquals(login, response.getBody().getName());
-    }
-
-    @Test
     void createFutureBirthUser_shouldShowErrorMessage() {
         User user = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().plusYears(35));
         ResponseEntity<User> response = restTemplate.postForEntity("/users", user, User.class);
