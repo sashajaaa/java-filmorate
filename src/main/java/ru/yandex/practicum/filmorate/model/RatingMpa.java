@@ -1,14 +1,24 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 
-@Service
-public class RatingMpa extends ListModel {
-    public RatingMpa() {
-    }
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 
-    public RatingMpa(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+@Service
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class RatingMpa {
+
+    @Positive
+    protected int id;
+
+    @NotBlank
+    protected String name;
 }

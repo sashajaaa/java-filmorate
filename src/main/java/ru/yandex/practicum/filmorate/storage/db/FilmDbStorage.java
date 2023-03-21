@@ -1,27 +1,35 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.AbstractStorage;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
-@Qualifier("dataBase")
-public class FilmDbStorage extends AbstractStorage<Film> implements FilmStorage {
+public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
@@ -67,13 +75,9 @@ public class FilmDbStorage extends AbstractStorage<Film> implements FilmStorage 
     }
 
     @Override
-    public Film delete(int filmId) {
-        Film film = getById(filmId);
+    public String delete(int filmId) {
         String sqlQuery = "DELETE FROM films WHERE film_id = ?";
-        if (jdbcTemplate.update(sqlQuery, filmId) == 0) {
-            throw new NotFoundException("Movie with ID = " + filmId + " not found");
-        }
-        return film;
+        return sqlQuery;
     }
 
     @Override
@@ -96,14 +100,14 @@ public class FilmDbStorage extends AbstractStorage<Film> implements FilmStorage 
         }
         String sqlQuery = "INSERT INTO film_genres (film_id, genre_id) "
                 + "VALUES (?, ?)";
-        List<Genre> genresList = new ArrayList<>(genres);
+        List<Genre> genresTable = new ArrayList<>(genres);
         this.jdbcTemplate.batchUpdate(sqlQuery, new BatchPreparedStatementSetter() {
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setInt(1, filmId);
-                ps.setInt(2, genresList.get(i).getId());
+                ps.setInt(2, genresTable.get(i).getId());
             }
             public int getBatchSize() {
-                return genresList.size();
+                return genresTable.size();
             }
         });
     }
@@ -139,7 +143,8 @@ public class FilmDbStorage extends AbstractStorage<Film> implements FilmStorage 
                 + "LEFT JOIN likes ON likes.film_id = films.film_id "
                 + "JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id "
                 + "GROUP BY films.film_id "
-                + "ORDER BY COUNT (likes.film_id) DESC";
+                + "ORDER BY COUNT (likes.film_id) DESC "
+                + "LIMIT 10";
         return jdbcTemplate.query(sqlQuery, this::makeFilm);
     }
 

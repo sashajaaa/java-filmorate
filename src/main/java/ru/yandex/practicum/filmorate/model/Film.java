@@ -1,20 +1,24 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @Getter
 @Setter
-public class Film extends Model {
+public class Film {
     private int id;
 
     @NotBlank

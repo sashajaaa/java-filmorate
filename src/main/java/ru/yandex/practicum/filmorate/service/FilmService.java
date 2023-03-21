@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
@@ -11,73 +11,72 @@ import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class FilmService {
     private final UserStorage userStorage;
-    private final FilmStorage storage;
+    private final FilmStorage filmStorage;
     private int id = 1;
     private static final LocalDate LIMIT_DATE = LocalDate.from(LocalDateTime.of(1895, 12, 28, 0, 0));
     private static final int LIMIT_LENGTH_OF_DESCRIPTION = 200;
 
     @Autowired
-    public FilmService(@Qualifier("dataBase") FilmStorage filmStorage, @Qualifier("dataBase") UserStorage userStorage) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
         this.userStorage = userStorage;
-        this.storage = filmStorage;
+        this.filmStorage = filmStorage;
     }
 
     public Collection<Film> getAll() {
-        log.info("List of all movies: " + storage.getEntities().size());
-        return storage.getAll();
+        log.info("List of all movies: " + filmStorage.getAll().size());
+        return filmStorage.getAll();
     }
 
     public Film create(Film film) {
         validate(film, "Movie form is filled in incorrectly");
         film.setId(id++);
-        Film result = storage.create(film);
+        Film result = filmStorage.create(film);
         log.info("Movie successfully added: " + film);
         return result;
     }
 
     public Film update(Film film) {
         validate(film, "Movie update form is filled in incorrectly");
-        Film result = storage.update(film);
+        Film result = filmStorage.update(film);
         log.info("Movie successfully updated: " + film);
         return result;
     }
 
-    public Film delete(int filmId) {
+    public void delete(int filmId) {
+        if (getById(filmId) == null) {
+            throw new NotFoundException("Movie with ID = " + filmId + " not found");
+        }
         log.info("Deleted film with id: {}", filmId);
-        return storage.delete(filmId);
+        filmStorage.delete(filmId);
     }
 
     public Film getById(Integer id) {
         log.info("Requested user with ID = " + id);
-        return storage.getById(id);
-    }
-
-
-    public void addGenres(Film film) {
-        storage.addGenre(film.getId(), film.getGenres());
+        return filmStorage.getById(id);
     }
 
     public void addLike(Integer filmId, Integer userId) {
         likeCheck(filmId, userId);
-        storage.addLike(filmId, userId);
+        filmStorage.addLike(filmId, userId);
         log.info("Like successfully added");
     }
 
     public void removeLike(Integer filmId, Integer userId) {
         likeCheck(filmId, userId);
-        storage.removeLike(filmId, userId);
+        filmStorage.removeLike(filmId, userId);
         log.info("Like successfully removed");
     }
 
     private void likeCheck(Integer filmId, Integer userId) {
-        storage.likeCheck(filmId, userId);
+        filmStorage.likeCheck(filmId, userId);
     }
 
     public List<Film> getPopular(Integer count) {
@@ -87,7 +86,7 @@ public class FilmService {
     }
 
     public List<Film> getSortedFilms() {
-        return storage.getSortedFilms();
+        return filmStorage.getSortedFilms();
     }
 
     protected void validate(Film film, String message) {

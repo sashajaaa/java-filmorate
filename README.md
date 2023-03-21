@@ -507,4 +507,6 @@ refactor:
 feat:  
 -Создан класс FilmoRateApplicationTests.  
 
-
+#### Коммит №11.3:  
+refactor:  
+-Рефактор после замечаний.  

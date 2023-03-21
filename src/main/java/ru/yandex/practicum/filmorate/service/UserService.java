@@ -2,16 +2,16 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
-
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 
 @Component
 @Service
@@ -21,12 +21,12 @@ public class UserService {
     private int id = 1;
 
     @Autowired
-    public UserService(@Qualifier("dataBase") UserStorage storage) {
+    public UserService(UserStorage storage) {
         this.storage = storage;
     }
 
     public Collection<User> getAll() {
-        log.info("List of all users: " + storage.getEntities().size());
+        log.info("List of all users: " + storage.getAll().size());
         return storage.getAll();
     }
 
@@ -47,9 +47,12 @@ public class UserService {
         return result;
     }
 
-    public User delete(int userId) {
+    public void delete(int userId) {
+        if (getById(userId) == null) {
+            throw new NotFoundException("User with ID = " + userId + " not found");
+        }
         log.info("Deleted film with id: {}", userId);
-        return storage.delete(userId);
+        storage.delete(userId);
     }
 
     public User getById(Integer id) {
@@ -89,7 +92,7 @@ public class UserService {
         storage.getById(friendId);
     }
 
-    protected void validate(User user, String message) {
+    private void validate(User user, String message) {
         if (user.getBirthday().isAfter(LocalDate.now())) {
             log.debug(message);
             throw new ValidationException(message);

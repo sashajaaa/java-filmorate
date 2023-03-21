@@ -16,7 +16,7 @@ import java.util.Set;
 @Builder(toBuilder = true)
 @Data
 @AllArgsConstructor
-public class User extends Model {
+public class User {
     private int id;
 
     @NotBlank
@@ -33,13 +33,13 @@ public class User extends Model {
     private LocalDate birthday;
 
     @JsonIgnore
-    final private Set<Integer> friends = new HashSet<>();
+    final private Set<Integer> friendIds = new HashSet<>();
 
     public void addFriend(Integer id) {
-        friends.add(id);
+        friendIds.add(id);
     }
 
     public void deleteFriend(Integer id) {
-        friends.remove(id);
+        friendIds.remove(id);
     }
 }

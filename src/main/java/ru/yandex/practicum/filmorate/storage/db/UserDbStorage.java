@@ -1,20 +1,20 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.AbstractStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 @Repository
-@Qualifier("dataBase")
-public class UserDbStorage extends AbstractStorage<User> implements UserStorage {
+public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
@@ -34,7 +34,6 @@ public class UserDbStorage extends AbstractStorage<User> implements UserStorage 
 
     @Override
     public User create(User user) {
-        super.create(user);
         String sqlQuery = "INSERT INTO users (user_name, login, email, birthday)"
                 + "VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sqlQuery, user.getName(), user.getLogin(), user.getEmail(), user.getBirthday());
@@ -56,13 +55,9 @@ public class UserDbStorage extends AbstractStorage<User> implements UserStorage 
     }
 
     @Override
-    public User delete(int userId) {
-        User user = getById(userId);
-        String sqlQuery = "DELETE FROM users WHERE user_id = ?";
-        if (jdbcTemplate.update(sqlQuery, userId) == 0) {
-            throw new NotFoundException("User with ID = " + userId + " not found!");
-        }
-        return user;
+    public String delete(int userId) {
+        String sqlQuery = "DELETE FROM users WHERE user_id = " + userId;
+        return sqlQuery;
     }
 
     @Override
