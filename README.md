@@ -499,4 +499,12 @@ private final UserDbStorage userStorage;
 refactor:  
 -полный рефактор всего.  
 
+#### Коммит №11.2:  
+refactor:  
+-Переработан класс UserDbStorage;  
+-Переработан класс UserService;  
+
+feat:  
+-Создан класс FilmoRateApplicationTests.  
+
 

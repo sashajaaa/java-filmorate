@@ -58,9 +58,9 @@ public class UserDbStorage extends AbstractStorage<User> implements UserStorage 
     @Override
     public User delete(int userId) {
         User user = getById(userId);
-        String sqlQuery = "DELETE FROM films WHERE film_id = ?";
+        String sqlQuery = "DELETE FROM users WHERE user_id = ?";
         if (jdbcTemplate.update(sqlQuery, userId) == 0) {
-            throw new NotFoundException("User with ID=" + userId + " not found!");
+            throw new NotFoundException("User with ID = " + userId + " not found!");
         }
         return user;
     }

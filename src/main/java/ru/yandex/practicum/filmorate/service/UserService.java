@@ -32,7 +32,7 @@ public class UserService {
 
     public User create(User user) {
         validate(user, "User form is filled in incorrectly");
-        fixVoidName(user);
+        preSave(user);
         user.setId(id++);
         User result = storage.create(user);
         log.info("User successfully added: " + user);
@@ -41,7 +41,7 @@ public class UserService {
 
     public User update(User user) {
         validate(user, "User update form is filled in incorrectly");
-        fixVoidName(user);
+        preSave(user);
         User result = storage.update(user);
         log.info("User successfully updated: " + user);
         return result;
@@ -96,7 +96,7 @@ public class UserService {
         }
     }
 
-    private void fixVoidName(User user) {
+    private void preSave(User user) {
         if (user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
