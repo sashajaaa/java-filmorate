@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Repository
@@ -34,9 +36,17 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User create(User user) {
-        String sqlQuery = "INSERT INTO users (user_name, login, email, birthday)"
-                + "VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sqlQuery, user.getName(), user.getLogin(), user.getEmail(), user.getBirthday());
+        Map<String, Object> keys = new SimpleJdbcInsert(this.jdbcTemplate)
+                .withTableName("users")
+                .usingColumns("user_name", "login", "email", "birthday")
+                .usingGeneratedKeyColumns("user_id")
+                .executeAndReturnKeyHolder(Map.of(
+                        "user_name", user.getName(),
+                        "login", user.getLogin(),
+                        "email", user.getEmail(),
+                        "birthday", java.sql.Date.valueOf(user.getBirthday())))
+                .getKeys();
+        user.setId((Integer) keys.get("user_id"));
         return user;
     }
 
@@ -84,15 +94,15 @@ public class UserDbStorage implements UserStorage {
     }
 
     public List<User> getFriends(int userId) {
-        List<User> listOfFriends = new ArrayList<>();
+        List<User> friends = new ArrayList<>();
         String sqlQuery = "SELECT * FROM users "
                 + "WHERE users.user_id IN (SELECT friend_id from friends "
                 + "WHERE user_id = ?)";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId);
         while (srs.next()) {
-            listOfFriends.add(UserDbStorage.userMap(srs));
+            friends.add(UserDbStorage.userMap(srs));
         }
-        return listOfFriends;
+        return friends;
     }
 
     public List<User> getCommonFriends(int friend1, int friend2) {
@@ -115,7 +125,7 @@ public class UserDbStorage implements UserStorage {
         return srs.next();
     }
 
-    public static User userMap(SqlRowSet srs) {
+    private static User userMap(SqlRowSet srs) {
         int id = srs.getInt("user_id");
         String name = srs.getString("user_name");
         String login = srs.getString("login");

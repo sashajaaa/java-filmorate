@@ -18,7 +18,6 @@ import java.util.List;
 @Slf4j
 public class UserService {
     private final UserStorage storage;
-    private int id = 1;
 
     @Autowired
     public UserService(UserStorage storage) {
@@ -33,7 +32,6 @@ public class UserService {
     public User create(User user) {
         validate(user, "User form is filled in incorrectly");
         preSave(user);
-        user.setId(id++);
         User result = storage.create(user);
         log.info("User successfully added: " + user);
         return result;

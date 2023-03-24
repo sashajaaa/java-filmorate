@@ -11,16 +11,15 @@ import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class FilmService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
-    private int id = 1;
     private static final LocalDate LIMIT_DATE = LocalDate.from(LocalDateTime.of(1895, 12, 28, 0, 0));
     private static final int LIMIT_LENGTH_OF_DESCRIPTION = 200;
 
@@ -37,7 +36,6 @@ public class FilmService {
 
     public Film create(Film film) {
         validate(film, "Movie form is filled in incorrectly");
-        film.setId(id++);
         Film result = filmStorage.create(film);
         log.info("Movie successfully added: " + film);
         return result;
@@ -64,29 +62,37 @@ public class FilmService {
     }
 
     public void addLike(Integer filmId, Integer userId) {
-        likeCheck(filmId, userId);
-        filmStorage.addLike(filmId, userId);
-        log.info("Like successfully added");
+        Film film = filmStorage.getById(filmId);
+        if (film != null) {
+            if (userStorage.getById(userId) != null) {
+                filmStorage.addLike(filmId, userId);
+                log.info("Like successfully added");
+            } else {
+                throw new NotFoundException("User with ID = " + userId + " not found");
+            }
+        } else {
+            throw new NotFoundException("Movie with ID = " + filmId + " not found");
+        }
     }
 
     public void removeLike(Integer filmId, Integer userId) {
-        likeCheck(filmId, userId);
-        filmStorage.removeLike(filmId, userId);
-        log.info("Like successfully removed");
-    }
-
-    private void likeCheck(Integer filmId, Integer userId) {
-        filmStorage.likeCheck(filmId, userId);
+        Film film = filmStorage.getById(filmId);
+        if (film != null) {
+            if (userStorage.getById(userId) != null) {
+                filmStorage.removeLike(filmId, userId);
+                log.info("Like successfully removed");
+            } else {
+                throw new NotFoundException("User with ID = " + userId + " not found");
+            }
+        } else {
+            throw new NotFoundException("Movie with ID = " + filmId + " not found");
+        }
     }
 
     public List<Film> getPopular(Integer count) {
-        List<Film> result = getSortedFilms().stream().limit(count).collect(Collectors.toList());
+        List<Film> result = new ArrayList<>(filmStorage.getPopular(count));
         log.info("Requested a list of popular movies");
         return result;
-    }
-
-    public List<Film> getSortedFilms() {
-        return filmStorage.getSortedFilms();
     }
 
     protected void validate(Film film, String message) {
