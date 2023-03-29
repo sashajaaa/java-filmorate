@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 @Slf4j
@@ -29,6 +30,13 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleRunTimeException(final RuntimeException e){
         log.error(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleObjectAlreadyExistsException(final ObjectAlreadyExistsException e){
+        log.error(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 

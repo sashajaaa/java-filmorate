@@ -38,6 +38,8 @@ public class Film {
 
     private RatingMpa mpa;
 
+    private Set<Integer> directorsId = new HashSet<>();
+
     @JsonIgnore
     final private Set<Integer> likes = new HashSet<>();
 
@@ -60,4 +62,9 @@ public class Film {
     public void removeGenre(Genre genre) {
         genres.remove(genre);
     }
+
+    public void addDirectorId(Integer id){directorsId.add(id);}
+
+    public void removeDirectorId(Integer id){directorsId.remove(id);}
+
 }
