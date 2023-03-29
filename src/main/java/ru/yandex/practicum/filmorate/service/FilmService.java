@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
@@ -66,6 +68,11 @@ public class FilmService {
         if (film != null) {
             if (userStorage.getById(userId) != null) {
                 filmStorage.addLike(filmId, userId);
+                User user = userStorage.getById(userId);
+                Set<Integer> userLikes = user.getLikes();
+                userLikes.add(filmId);
+                user.setLikes(userLikes);
+                userStorage.update(user);
                 log.info("Like successfully added");
             } else {
                 throw new NotFoundException("User with ID = " + userId + " not found");
