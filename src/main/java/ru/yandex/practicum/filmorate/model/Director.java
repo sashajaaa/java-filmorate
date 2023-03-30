@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 public class Director {
 
     private int id;
-    @NotBlank(message = "Имя режиссера не может быть пустым")
+    @NotBlank(message = "Director`s name can not be blank")
     private String name;
 
 }

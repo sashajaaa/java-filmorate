@@ -155,10 +155,10 @@ public class FilmDbStorage implements FilmStorage {
             films.add(getById(filmIdRow.getInt("film_id")));
         }
         if (films.size() == 0) {
-            log.info("Список фильмов режиссера {} пуст", directorId);
-            throw new NotFoundException("Список фильмов режиссера " + directorId + " пуст");
+            log.info("Director's {} films are not found", directorId);
+            throw new NotFoundException("Director's " + directorId + " films are not found");
         }
-        log.info("Передан отсортированный по {} список фильмов режиссера {} {}", sortBy, directorId, films);
+        log.info("Director's {} list of films{} sorted by {} is returned", directorId, films,sortBy);
         return films;
     }
 

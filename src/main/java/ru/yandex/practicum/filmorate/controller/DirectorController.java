@@ -3,7 +3,13 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 
@@ -23,37 +29,37 @@ public class DirectorController {
 
     @PostMapping("/directors")
     public Director addDirector(@Valid @RequestBody Director director) {
-        log.info("Запрос на добавления режиссера {}", director);
+        log.info("Add director request {}", director);
         return directorService.addDirector(director);
     }
 
     @GetMapping("/directors")
     public List<Director> getAllDirectors() {
-        log.info("Запрошен список всех режиссеров");
+        log.info("All directors list request");
         return directorService.getAllDirectors();
     }
 
     @GetMapping("/directors/{id}")
     public Director getDirectorById(@PathVariable int id) {
-        log.info("Запрошен режиссер id {}", id);
+        log.info("Director requested, id {}", id);
         return directorService.getDirectorById(id);
     }
 
     @PutMapping("/directors")
     public Director updateDirector(@Valid @RequestBody Director director) {
-        log.info("Запрошено обновление режиссера {}", director.getId());
+        log.info("Update director request {}", director.getId());
         return directorService.updateDirector(director);
     }
 
     @DeleteMapping("/directors")
     public void deleteAllDirectors() {
-        log.info("Запрошено удаление всех режиссеров");
+        log.info("Delete all directors request");
         directorService.deleteAllDirectors();
     }
 
     @DeleteMapping("/directors/{id}")
     public Director deleteDirectorById(@PathVariable int id) {
-        log.info("Запрошено удаление режиссера {}", id);
+        log.info("Delete director request {}", id);
         return directorService.deleteDirectorById(id);
     }
 

@@ -45,14 +45,14 @@ public class DirectorDbStorage implements DirecorStorage {
     public Director addDirector(Director director) {
 
         if (isPresentInDB(director)) {
-            throw new ObjectAlreadyExistsException("Не удалось добавить режиссера: режиссер уже существует");
+            throw new ObjectAlreadyExistsException("Unable to add director: director already exists");
         }
         jdbcTemplate.update(requestInsertDirector, director.getName());
         SqlRowSet idRow = getIdRowsFromDB(director);
         if (idRow.next()) {
             director.setId(idRow.getInt("director_id"));
         }
-        log.info("Добавлен режиссер {}", director);
+        log.info("Director {} is added", director);
         return director;
     }
 
@@ -64,7 +64,7 @@ public class DirectorDbStorage implements DirecorStorage {
             Integer id = idsRow.getInt("director_id");
             directors.add(getDirectorById(id));
         }
-        log.info("Передан список всех пользователей");
+        log.info("List of directors is returned");
         return directors;
     }
 
@@ -73,10 +73,10 @@ public class DirectorDbStorage implements DirecorStorage {
 
         SqlRowSet directorRow = getDirectorRowByID(id);
         if (!directorRow.next()) {
-            throw new NotFoundException("Не удалось передать режиссера: режиссер не найден");
+            throw new NotFoundException("Unable to return director: director is not found");
         }
         Director director = buildDirectorFromRow(directorRow);
-        log.info("Передан режиссер {}", director);
+        log.info("Director is returned {}", director);
         return director;
     }
 
@@ -84,10 +84,10 @@ public class DirectorDbStorage implements DirecorStorage {
     public Director updateDirector(Director director) {
 
         if (!isPresentInDB(director.getId())) {
-            throw new NotFoundException("Не удалось обновить режиссера: режиссер не найден");
+            throw new NotFoundException("Unable to update director: director is not found");
         }
         if (isPresentInDB(director)) {
-            throw new NotFoundException("Не удалось обновить режиссера: режиссер уже существует");
+            throw new NotFoundException("Unable to update director: director is not found");
         }
         Director bufferDirector = getDirectorById(director.getId());
         try {
@@ -97,7 +97,7 @@ public class DirectorDbStorage implements DirecorStorage {
             throw new RuntimeException("SQL exception");
         }
         Director updatedDirector = getDirectorById(director.getId());
-        log.info("Обновлен режиссер {}", updatedDirector);
+        log.info("Director is updated {}", updatedDirector);
         return updatedDirector;
 
     }
@@ -107,7 +107,7 @@ public class DirectorDbStorage implements DirecorStorage {
 
         SqlRowSet directorRow = getDirectorRowByID(id);
         if (!directorRow.next()) {
-            throw new NotFoundException("Не удалось удалить режиссера: режиссер не найден");
+            throw new NotFoundException("Unable to delete director: director is not found");
         }
         Director removedDirector = Director.builder()
                 .id(directorRow.getInt("director_id"))
@@ -117,7 +117,7 @@ public class DirectorDbStorage implements DirecorStorage {
         if (getAllDirectors().size() == 0) {
             jdbcTemplate.execute(requestResetPK);
         }
-        log.info("Удален режиссер {}", removedDirector);
+        log.info("Director is deleted {}", removedDirector);
         return removedDirector;
 
     }
@@ -130,7 +130,7 @@ public class DirectorDbStorage implements DirecorStorage {
             jdbcTemplate.execute(requestDeleteById + idsRow.getInt("director_id"));
         }
         jdbcTemplate.execute(requestResetPK);
-        log.info("Таблица режиссеров очищена");
+        log.info("Directors table is dropped");
 
     }
 
