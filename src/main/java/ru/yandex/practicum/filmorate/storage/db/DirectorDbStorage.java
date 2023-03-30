@@ -83,8 +83,11 @@ public class DirectorDbStorage implements DirecorStorage {
     @Override
     public Director updateDirector(Director director) {
 
-        if(!isPresentInDB(director)){
-            throw new NotFoundException("Не удалось обновить режиссера: режиссер не найде");
+        if(!isPresentInDB(director.getId())){
+            throw new NotFoundException("Не удалось обновить режиссера: режиссер не найден");
+        }
+        if(isPresentInDB(director)){
+            throw new NotFoundException("Не удалось обновить режиссера: режиссер уже существует");
         }
         Director bufferDirector = getDirectorById(director.getId());
         try{
@@ -110,11 +113,10 @@ public class DirectorDbStorage implements DirecorStorage {
                 .id(directorRow.getInt("director_id"))
                 .name(directorRow.getString("director_name"))
                 .build();
-
+        jdbcTemplate.execute(requestDeleteById+id);
         if(getAllDirectors().size()==0){
             jdbcTemplate.execute(requestResetPK);
         }
-        jdbcTemplate.execute(requestDeleteById+id);
         log.info("Удален режиссер {}",removedDirector);
         return removedDirector;
 
@@ -140,10 +142,11 @@ public class DirectorDbStorage implements DirecorStorage {
     }
 
     private boolean isPresentInDB(Director director){
-        if(getIdRowsFromDB(director).next()){
-            return true;
-        }
-        return false;
+        return getIdRowsFromDB(director).next();
+    }
+
+    private boolean isPresentInDB(Integer id){
+        return getDirectorRowByID(id).next();
     }
 
     private SqlRowSet getDirectorRowByID(Integer id){
