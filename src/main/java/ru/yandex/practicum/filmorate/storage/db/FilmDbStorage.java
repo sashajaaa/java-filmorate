@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import java.sql.Types;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -179,6 +180,17 @@ public class FilmDbStorage implements FilmStorage {
         return new Genre(genreId, genreName);
     }
 
+    private Set<Integer> getLikes(int filmId) {
+        String sqlQuery = "SELECT user_id FROM likes WHERE film_id = ?";
+        List<Integer> foundFilmLikes = jdbcTemplate.queryForList(sqlQuery, Integer.class, filmId);
+        /*List<Integer> foundFilmLikes = jdbcTemplate.query(sqlQuery,
+                new Object[]{filmId},
+                new int[]{Types.INTEGER},
+                (rs, rowNum) -> rs.getInt("film_id"));*/
+        Set<Integer> likes = new HashSet<>(foundFilmLikes);
+        return likes;
+    }
+
     private Film makeFilm(ResultSet rs, int id) throws SQLException {
         int filmId = rs.getInt("film_id");
         String name = rs.getString("film_name");
@@ -211,6 +223,7 @@ public class FilmDbStorage implements FilmStorage {
         String mpaName = srs.getString("rating_name");
         RatingMpa mpa = new RatingMpa(mpaId, mpaName);
         Set<Genre> genres = getGenres(id);
+        Set<Integer> likes = getLikes(id);
         return Film.builder()
                 .id(id)
                 .name(name)
@@ -219,6 +232,7 @@ public class FilmDbStorage implements FilmStorage {
                 .mpa(mpa)
                 .genres(genres)
                 .releaseDate(releaseDate)
+                .likes(likes)
                 .build();
     }
 }

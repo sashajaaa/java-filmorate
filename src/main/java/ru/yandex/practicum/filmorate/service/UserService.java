@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
@@ -24,6 +26,7 @@ import java.util.List;
 @Service
 @Slf4j
 public class UserService {
+
     private final UserStorage storage;
 
     private final FilmStorage filmStorage;
@@ -95,26 +98,41 @@ public class UserService {
         return result;
     }
 
-    public List<Integer> getRecommendations(int userId) {
-        List<Integer> recommendations = new ArrayList<>();
+    public List<Film> getRecommendations(int userId) {
+        List<Film> recommendations = new ArrayList<>();
         List<Integer> usersLikesSameFilms = new ArrayList<>();
-        if (storage.getById(userId) != null) {
-            Set<Integer> userLikes = storage.getById(userId).getLikes();
-            for (Integer filmId : userLikes) {
-                usersLikesSameFilms.addAll(filmStorage.getById(filmId).getLikes());
-            }
-            Map<Integer, Long> repetitions = usersLikesSameFilms.stream()
-                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-            Optional<Integer> idUserWithSameLikes = repetitions.entrySet().stream()
-                    .max(Map.Entry.comparingByValue())
-                    .map(Map.Entry::getKey);
-            User userWithSameLikes = storage.getById(idUserWithSameLikes.get());
-            recommendations.addAll(userWithSameLikes.getLikes());
-            recommendations.removeAll(storage.getById(userId).getLikes());
-            log.info("For user {} recommended {} films from user {}.", userId, recommendations.size(), idUserWithSameLikes);
-        } else {
+        if (storage.getById(userId) == null) {
             throw new NotFoundException("User with ID = " + userId + " not found");
         }
+        User user = storage.getById(userId);
+        Set<Integer> userLikes = storage.getById(userId).getLikes();
+        if (userLikes.isEmpty()) {
+            return recommendations;
+        }
+        for (Integer filmId : userLikes) {
+            Film film = filmStorage.getById(filmId);
+            usersLikesSameFilms.addAll(filmStorage.getById(filmId).getLikes());
+        }
+        Map<Integer, Long> repetitions = usersLikesSameFilms.stream()
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        repetitions.remove(userId);
+        if (repetitions.isEmpty()) {
+            return recommendations;
+        }
+        Optional<Integer> idUserWithSameLikes = repetitions.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey);
+        User userWithSameLikes = storage.getById(idUserWithSameLikes.get());
+        List<Integer> recInteger = new ArrayList<>();
+        recInteger.addAll(userWithSameLikes.getLikes());
+        recInteger.removeAll(storage.getById(userId).getLikes());
+        for (Integer filmId : recInteger) {
+            Film filmToRec = filmStorage.getById(filmId);
+            recommendations.add(filmToRec);
+        }
+        log.info("For user {} recommended {} films from user {}.", userId, recommendations.size(),
+                idUserWithSameLikes.get());
+
         return recommendations;
     }
 
