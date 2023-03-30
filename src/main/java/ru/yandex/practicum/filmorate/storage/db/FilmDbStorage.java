@@ -42,10 +42,10 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> getAll() {
         SqlRowSet filmsIdRow = jdbcTemplate.queryForRowSet("SELECT film_id FROM films");
         List<Film> films = new ArrayList<>();
-        while (filmsIdRow.next()){
+        while (filmsIdRow.next()) {
             films.add(getById(filmsIdRow.getInt("film_id")));
         }
-        Collections.sort(films,(f1,f2)->f1.getId()-f2.getId());
+        Collections.sort(films, (f1, f2) -> f1.getId() - f2.getId());
         return films;
     }
 
@@ -63,7 +63,7 @@ public class FilmDbStorage implements FilmStorage {
                 .getKeys();
         film.setId((Integer) keys.get("film_id"));
         addGenre((Integer) keys.get("film_id"), film.getGenres());
-        addDirectors((Integer) keys.get("film_id"),film.getDirectors());
+        addDirectors((Integer) keys.get("film_id"), film.getDirectors());
         Film newFilm = getById((Integer) keys.get("film_id"));
         System.out.println(newFilm);
         return newFilm;
@@ -71,6 +71,7 @@ public class FilmDbStorage implements FilmStorage {
 
     /**
      * Обновляет фильм, если возникнет ошибка при обновлении, восстановятся исходные данные
+     *
      * @param film обновляемый фильм
      * @return результат обновления
      */
@@ -94,7 +95,7 @@ public class FilmDbStorage implements FilmStorage {
             filmId = film.getId();
             film.setGenres(getGenres(filmId));
             film.setDirectors(getDirectors(filmId));
-        }catch (DataIntegrityViolationException | BadSqlGrammarException ex){
+        } catch (DataIntegrityViolationException | BadSqlGrammarException ex) {
             update(buffFilm);
             throw new RuntimeException("SQL exception");
         }
@@ -134,6 +135,7 @@ public class FilmDbStorage implements FilmStorage {
                 ps.setInt(1, filmId);
                 ps.setInt(2, genresTable.get(i).getId());
             }
+
             public int getBatchSize() {
                 return genresTable.size();
             }
@@ -149,18 +151,18 @@ public class FilmDbStorage implements FilmStorage {
             filmIdRow = jdbcTemplate.queryForRowSet(requestFilmIdByLikes, directorId);
         }
         List<Film> films = new LinkedList<>();
-        while (filmIdRow.next()){
+        while (filmIdRow.next()) {
             films.add(getById(filmIdRow.getInt("film_id")));
         }
-        if(films.size()==0){
-            log.info("Список фильмов режиссера {} пуст",directorId);
-            throw new NotFoundException("Список фильмов режиссера "+directorId+" пуст");
+        if (films.size() == 0) {
+            log.info("Список фильмов режиссера {} пуст", directorId);
+            throw new NotFoundException("Список фильмов режиссера " + directorId + " пуст");
         }
-        log.info("Передан отсортированный по {} список фильмов режиссера {} {}",sortBy,directorId,films);
+        log.info("Передан отсортированный по {} список фильмов режиссера {} {}", sortBy, directorId, films);
         return films;
     }
 
-    private void addDirectors(int filmId, Set<Director> directors){
+    private void addDirectors(int filmId, Set<Director> directors) {
 
         deleteAllDirectorsByFilmId(filmId);
         if (directors == null || directors.isEmpty()) {
@@ -168,12 +170,13 @@ public class FilmDbStorage implements FilmStorage {
         }
         List<Director> directorList = new ArrayList<>(directors);
         jdbcTemplate.batchUpdate("INSERT INTO films_directors (film_id, director_id) VALUES(?,?)",
-                new BatchPreparedStatementSetter(){
+                new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setInt(1,filmId);
-                        ps.setInt(2,directorList.get(i).getId());
+                        ps.setInt(1, filmId);
+                        ps.setInt(2, directorList.get(i).getId());
                     }
+
                     @Override
                     public int getBatchSize() {
                         return directorList.size();
@@ -191,8 +194,10 @@ public class FilmDbStorage implements FilmStorage {
         return genres;
     }
 
-    private Set<Director> getDirectors(int filmId){
-        Set<Director> directors = new TreeSet<>((d1,d2)->{return d1.getId()-d2.getId();});
+    private Set<Director> getDirectors(int filmId) {
+        Set<Director> directors = new TreeSet<>((d1, d2) -> {
+            return d1.getId() - d2.getId();
+        });
         String sqlQuery = "SELECT films_directors.director_id, directors.director_name FROM films_directors "
                 + "JOIN directors ON directors.director_id = films_directors.director_id "
                 + "WHERE film_id = ? ORDER BY director_id ASC";
@@ -258,7 +263,7 @@ public class FilmDbStorage implements FilmStorage {
     private Director makeDirector(ResultSet rs, int id) throws SQLException {
         Integer directorId = rs.getInt("director_id");
         String directorName = rs.getString("director_name");
-        return new Director(directorId,directorName);
+        return new Director(directorId, directorName);
     }
 
     private Film makeFilm(ResultSet rs, int id) throws SQLException {
