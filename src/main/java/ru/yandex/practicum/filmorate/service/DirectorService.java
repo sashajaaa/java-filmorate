@@ -19,30 +19,29 @@ public class DirectorService {
         this.direcorStorage = direcorStorage;
     }
 
-    public Director addDirector(Director director){
+    public Director addDirector(Director director) {
         return direcorStorage.addDirector(director);
     }
 
-    public Director updateDirector(Director director){
+    public Director updateDirector(Director director) {
         return direcorStorage.updateDirector(director);
     }
 
-    public Director deleteDirectorById(Integer id){
+    public Director deleteDirectorById(Integer id) {
         return direcorStorage.deleteDirectorById(id);
     }
 
-    public void deleteAllDirectors(){
+    public void deleteAllDirectors() {
         direcorStorage.deleteAllDirectors();
     }
 
-    public Director getDirectorById(Integer id){
+    public Director getDirectorById(Integer id) {
         return direcorStorage.getDirectorById(id);
     }
 
-    public List<Director> getAllDirectors(){
+    public List<Director> getAllDirectors() {
         return direcorStorage.getAllDirectors();
     }
-
 
 
 }
