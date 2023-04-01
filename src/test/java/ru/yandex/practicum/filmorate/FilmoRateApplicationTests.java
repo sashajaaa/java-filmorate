@@ -31,14 +31,22 @@ class FilmoRateApplicationTests {
 
     @Test
     void getAllFilms_shouldConfirmThatTwoFilmsWasAddedAtList() {
-        Film film1 = Film.builder().id(1).name("Avatar").
-                description("blue peoples").
-                releaseDate(LocalDate.now().minusYears(40)).
-                duration(180).genres(new HashSet<>()).mpa(ratingMpaDbStorage.getRatingMpaById(1)).build();
-        Film film2 = Film.builder().id(1).name("Avatar2").
-                description("blue peoples and green peoples").
-                releaseDate(LocalDate.now().minusYears(40)).
-                duration(180).genres(new HashSet<>()).mpa(ratingMpaDbStorage.getRatingMpaById(1)).build();
+        Film film1 = Film.builder()
+                .id(1)
+                .name("Avatar")
+                .description("blue peoples")
+                .releaseDate(LocalDate.now().minusYears(40))
+                .duration(180).genres(new HashSet<>())
+                .mpa(ratingMpaDbStorage.getRatingMpaById(1))
+                .build();
+        Film film2 = Film.builder()
+                .id(1)
+                .name("Avatar2")
+                .description("blue peoples and green peoples")
+                .releaseDate(LocalDate.now().minusYears(40)).duration(180)
+                .genres(new HashSet<>())
+                .mpa(ratingMpaDbStorage.getRatingMpaById(1))
+                .build();
         filmDbStorage.create(film1);
         filmDbStorage.create(film2);
         Collection<Film> films = filmDbStorage.getAll();
@@ -48,10 +56,15 @@ class FilmoRateApplicationTests {
 
     @Test
     void createFilm_shouldConfirmThatFilmIdExists() {
-        Film film = Film.builder().id(1).name("Avatar").
-                description("blue peoples").
-                releaseDate(LocalDate.now().minusYears(40)).
-                duration(180).genres(new HashSet<>()).mpa(ratingMpaDbStorage.getRatingMpaById(1)).build();
+        Film film = Film.builder()
+                .id(1)
+                .name("Avatar")
+                .description("blue peoples")
+                .releaseDate(LocalDate.now().minusYears(40))
+                .duration(180)
+                .genres(new HashSet<>())
+                .mpa(ratingMpaDbStorage.getRatingMpaById(1))
+                .build();
         filmDbStorage.create(film);
         Film filmOptional = filmDbStorage.getById(1);
 
@@ -60,10 +73,15 @@ class FilmoRateApplicationTests {
 
     @Test
     void getFilmById_shouldConfirmThatFilmIdExists(){
-        Film film = Film.builder().id(1).name("Avatar").
-                description("blue peoples").
-                releaseDate(LocalDate.now().minusYears(40)).
-                duration(180).genres(new HashSet<>()).mpa(ratingMpaDbStorage.getRatingMpaById(1)).build();
+        Film film = Film.builder()
+                .id(1)
+                .name("Avatar")
+                .description("blue peoples")
+                .releaseDate(LocalDate.now().minusYears(40))
+                .duration(180)
+                .genres(new HashSet<>())
+                .mpa(ratingMpaDbStorage.getRatingMpaById(1))
+                .build();
         filmDbStorage.create(film);
 
         assertEquals(filmDbStorage.getById(1).getId(),film.getId());
