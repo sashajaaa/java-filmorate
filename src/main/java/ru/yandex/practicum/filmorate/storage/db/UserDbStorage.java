@@ -17,10 +17,27 @@ import java.util.Objects;
 
 @Repository
 public class UserDbStorage implements UserStorage {
+    private static final String GET_USER_ID = "SELECT user_id FROM users WHERE user_id=?";
     private final JdbcTemplate jdbcTemplate;
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private static User userMap(SqlRowSet srs) {
+        int id = srs.getInt("user_id");
+        String name = srs.getString("user_name");
+        String login = srs.getString("login");
+        String email = srs.getString("email");
+        LocalDate birthday = Objects.requireNonNull(srs.getTimestamp("birthday"))
+                .toLocalDateTime().toLocalDate();
+        return User.builder()
+                .id(id)
+                .name(name)
+                .login(login)
+                .email(email)
+                .birthday(birthday)
+                .build();
     }
 
     @Override
@@ -81,6 +98,11 @@ public class UserDbStorage implements UserStorage {
         }
     }
 
+    @Override
+    public boolean containsUser(int id) {
+        return jdbcTemplate.queryForRowSet(GET_USER_ID, id).next();
+    }
+
     public void addFriend(int userId, int friendId) {
         String sqlQuery = "INSERT INTO friends (user_id, friend_id, status) "
                 + "VALUES(?, ?, ?)";
@@ -88,7 +110,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     public void removeFriend(int userId, int friendId) {
-        String sqlQuery = "DELETE friends "
+        String sqlQuery = "DELETE FROM friends "
                 + "WHERE user_id = ? AND friend_id = ?";
         jdbcTemplate.update(sqlQuery, userId, friendId);
     }
@@ -96,7 +118,7 @@ public class UserDbStorage implements UserStorage {
     public List<User> getFriends(int userId) {
         List<User> friends = new ArrayList<>();
         String sqlQuery = "SELECT * FROM users "
-                + "WHERE users.user_id IN (SELECT friend_id from friends "
+                + "WHERE users.user_id IN (SELECT friend_id FROM friends "
                 + "WHERE user_id = ?)";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId);
         while (srs.next()) {
@@ -108,7 +130,7 @@ public class UserDbStorage implements UserStorage {
     public List<User> getCommonFriends(int friend1, int friend2) {
         List<User> commonFriends = new ArrayList<>();
         String sqlQuery = "SELECT * FROM users "
-                + "WHERE users.user_id IN (SELECT friend_id from friends "
+                + "WHERE users.user_id IN (SELECT friend_id FROM friends "
                 + "WHERE user_id IN (?, ?) "
                 + "AND friend_id NOT IN (?, ?))";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, friend1, friend2, friend1, friend2);
@@ -120,24 +142,8 @@ public class UserDbStorage implements UserStorage {
 
     public boolean isFriend(int userId, int friendId) {
         String sqlQuery = "SELECT * FROM friends WHERE "
-                + "user_id = ? AND friends_id = ?";
+                + "user_id = ? AND friend_id = ?";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
         return srs.next();
-    }
-
-    private static User userMap(SqlRowSet srs) {
-        int id = srs.getInt("user_id");
-        String name = srs.getString("user_name");
-        String login = srs.getString("login");
-        String email = srs.getString("email");
-        LocalDate birthday = Objects.requireNonNull(srs.getTimestamp("birthday"))
-                .toLocalDateTime().toLocalDate();
-        return User.builder()
-                .id(id)
-                .name(name)
-                .login(login)
-                .email(email)
-                .birthday(birthday)
-                .build();
     }
 }
