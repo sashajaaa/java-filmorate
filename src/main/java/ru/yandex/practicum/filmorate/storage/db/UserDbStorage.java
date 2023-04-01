@@ -89,7 +89,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     public void removeFriend(int userId, int friendId) {
-        String sqlQuery = "DELETE friends "
+        String sqlQuery = "DELETE FROM friends "
                 + "WHERE user_id = ? AND friend_id = ?";
         jdbcTemplate.update(sqlQuery, userId, friendId);
     }

@@ -193,8 +193,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Set<Genre> getGenres(int filmId) {
-        Comparator<Genre> compId = Comparator.comparing(Genre::getId);
-        Set<Genre> genres = new TreeSet<>(compId);
+        Set<Genre> genres = new TreeSet<>(Comparator.comparing(Genre::getId));
         String sqlQuery = "SELECT film_genres.genre_id, genres.genre_name FROM film_genres "
                 + "JOIN genres ON genres.genre_id = film_genres.genre_id "
                 + "WHERE film_id = ? ORDER BY genre_id ASC";
@@ -266,7 +265,7 @@ public class FilmDbStorage implements FilmStorage {
         int mpaId = rs.getInt("rating_id");
         String mpaName = rs.getString("rating_name");
         RatingMpa mpa = new RatingMpa(mpaId, mpaName);
-        Set<Genre> genres = new HashSet<>();
+        Set<Genre> genres = getGenres(filmId);
         Set<Director> directors = new HashSet<>();
         return Film.builder()
                 .id(filmId)
