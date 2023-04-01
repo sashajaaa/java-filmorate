@@ -6,11 +6,7 @@ import java.util.List;
 
 public interface DirectorStorage {
 
-    public Director addDirector(Director director);
-
-    public List<Director> getAllDirectors();
-
-    public Director getDirectorById(Integer id);
+    Director addDirector(Director director);
 
     List<Director> getAllDirectors();
 

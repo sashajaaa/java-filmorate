@@ -49,7 +49,7 @@ public class DirectorService {
 
     public void containsDirector(int id) {
         if (!directorStorage.containsDirector(id)) {
-            throw new NotFoundException("Режиссёр с id=" + id + " отсутствует в списке");
+            throw new NotFoundException("Director with id=" + id + " is absent");
         }
     }
 }

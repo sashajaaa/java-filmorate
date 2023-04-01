@@ -204,27 +204,11 @@ public class FilmDbStorage implements FilmStorage {
         });
     }
 
-    public void addLike(int filmId, int userId) {
-        String sqlQuery = "INSERT INTO likes (film_id, user_id) "
-                + "VALUES (?, ?)";
-        jdbcTemplate.update(sqlQuery, filmId, userId);
-    }
 
     public void removeLike(int filmId, int userId) {
         String sqlQuery = "DELETE likes "
                 + "WHERE film_id = ? AND user_id = ?";
         jdbcTemplate.update(sqlQuery, filmId, userId);
-    }
-
-    public List<Film> getPopular(Integer count) {
-        String sqlQuery = "SELECT * FROM films "
-                + "LEFT JOIN likes ON likes.film_id = films.film_id "
-                + "JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id "
-                + "GROUP BY films.film_id "
-                + "ORDER BY COUNT (likes.film_id) DESC "
-                + "LIMIT "
-                + count;
-        return jdbcTemplate.query(sqlQuery, this::makeFilm);
     }
 
     private void addDirectors(int filmId, Set<Director> directors) {
@@ -296,13 +280,6 @@ public class FilmDbStorage implements FilmStorage {
                 + "VALUES (?, ?)";
         jdbcTemplate.update(sqlQuery, filmId, userId);
     }
-
-    public void removeLike(int filmId, int userId) {
-        String sqlQuery = "DELETE likes "
-                + "WHERE film_id = ? AND user_id = ?";
-        jdbcTemplate.update(sqlQuery, filmId, userId);
-    }
-
     public List<Film> getPopular(Integer count) {
         String sqlQuery = "SELECT * FROM films "
                 + "LEFT JOIN likes ON likes.film_id = films.film_id "

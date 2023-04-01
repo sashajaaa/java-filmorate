@@ -61,14 +61,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Director getDirectorById(Integer id) {
-
-        SqlRowSet directorRow = getDirectorRowByID(id);
-        if (!directorRow.next()) {
-            throw new NotFoundException("Unable to return director: director is not found");
-        }
-        Director director = buildDirectorFromRow(directorRow);
-        log.info("Director is returned {}", director);
-        return director;
+        return buildDirectorFromRow(getDirectorRowByID(id));
     }
 
     @Override

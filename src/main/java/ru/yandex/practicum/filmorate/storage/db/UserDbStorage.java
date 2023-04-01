@@ -92,11 +92,7 @@ public class UserDbStorage implements UserStorage {
     public User getById(Integer userId) {
         String sqlQuery = "SELECT * FROM users WHERE user_id = ?";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId);
-        if (srs.next()) {
             return userMap(srs);
-        } else {
-            throw new NotFoundException("User with ID=" + userId + " not found!");
-        }
     }
 
     @Override
