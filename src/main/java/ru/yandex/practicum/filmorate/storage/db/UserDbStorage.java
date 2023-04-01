@@ -65,15 +65,15 @@ public class UserDbStorage implements UserStorage {
     public User create(User user) {
         Map<String, Object> keys = new SimpleJdbcInsert(this.jdbcTemplate)
                 .withTableName("users")
-                .usingColumns(USER_NAME, LOGIN, EMAIL, BIRTHDAY)
-                .usingGeneratedKeyColumns(USER_NAME)
+                .usingColumns("user_name", "login", "email", "birthday")
+                .usingGeneratedKeyColumns("user_id")
                 .executeAndReturnKeyHolder(Map.of(
-                        USER_NAME, user.getName(),
-                        LOGIN, user.getLogin(),
-                        EMAIL, user.getEmail(),
-                        BIRTHDAY, java.sql.Date.valueOf(user.getBirthday())))
+                        "user_name", user.getName(),
+                        "login", user.getLogin(),
+                        "email", user.getEmail(),
+                        "birthday", java.sql.Date.valueOf(user.getBirthday())))
                 .getKeys();
-        user.setId((Integer) keys.get(USER_ID));
+        user.setId((Integer) keys.get("user_id"));
         return user;
     }
 
