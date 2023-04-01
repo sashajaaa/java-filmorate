@@ -15,6 +15,7 @@ import java.util.List;
 @Slf4j
 public class DirectorDbStorage implements DirectorStorage {
 
+    private static final String DIRECTOR_ID = "director_id";
     private final JdbcTemplate jdbcTemplate;
     @Value("${director.get-id-by-director}")
     private String requestGetIdByDirector;
@@ -40,7 +41,7 @@ public class DirectorDbStorage implements DirectorStorage {
         jdbcTemplate.update(requestInsertDirector, director.getName());
         SqlRowSet idRow = getIdRowsFromDB(director);
         if (idRow.next()) {
-            director.setId(idRow.getInt("director_id"));
+            director.setId(idRow.getInt(DIRECTOR_ID));
         }
         return getDirectorById(director.getId());
     }
@@ -50,7 +51,7 @@ public class DirectorDbStorage implements DirectorStorage {
         List<Director> directors = new ArrayList<>();
         SqlRowSet idsRow = jdbcTemplate.queryForRowSet(requestAllIDs);
         while (idsRow.next()) {
-            Integer id = idsRow.getInt("director_id");
+            Integer id = idsRow.getInt(DIRECTOR_ID);
             directors.add(getDirectorById(id));
         }
         return directors;
@@ -72,7 +73,7 @@ public class DirectorDbStorage implements DirectorStorage {
     public Director deleteDirectorById(Integer id) {
         SqlRowSet directorRow = getDirectorRowByID(id);
         Director removedDirector = Director.builder()
-                .id(directorRow.getInt("director_id"))
+                .id(directorRow.getInt(DIRECTOR_ID))
                 .name(directorRow.getString("director_name"))
                 .build();
         jdbcTemplate.execute(requestDeleteById + id);
@@ -86,7 +87,7 @@ public class DirectorDbStorage implements DirectorStorage {
     public void deleteAllDirectors() {
         SqlRowSet idsRow = jdbcTemplate.queryForRowSet(requestAllIDs);
         while (idsRow.next()) {
-            jdbcTemplate.execute(requestDeleteById + idsRow.getInt("director_id"));
+            jdbcTemplate.execute(requestDeleteById + idsRow.getInt(DIRECTOR_ID));
         }
         jdbcTemplate.execute(requestResetPK);
     }
@@ -99,7 +100,7 @@ public class DirectorDbStorage implements DirectorStorage {
     private Director buildDirectorFromRow(SqlRowSet row) {
         return Director.builder()
                 .name(row.getString("director_name"))
-                .id(row.getInt("director_id"))
+                .id(row.getInt(DIRECTOR_ID))
                 .build();
     }
 

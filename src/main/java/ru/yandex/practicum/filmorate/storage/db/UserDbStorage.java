@@ -4,7 +4,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
@@ -18,6 +17,17 @@ import java.util.Objects;
 @Repository
 public class UserDbStorage implements UserStorage {
     private static final String GET_USER_ID = "SELECT user_id FROM users WHERE user_id=?";
+
+    private static final String USER_ID = "user_id";
+
+    private static final String USER_NAME = "user_name";
+
+    private static final String LOGIN = "login";
+
+    private static final String EMAIL = "email";
+
+    private static final String BIRTHDAY = "birthday";
+    
     private final JdbcTemplate jdbcTemplate;
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
@@ -25,11 +35,11 @@ public class UserDbStorage implements UserStorage {
     }
 
     private static User userMap(SqlRowSet srs) {
-        int id = srs.getInt("user_id");
-        String name = srs.getString("user_name");
-        String login = srs.getString("login");
-        String email = srs.getString("email");
-        LocalDate birthday = Objects.requireNonNull(srs.getTimestamp("birthday"))
+        int id = srs.getInt(USER_ID);
+        String name = srs.getString(USER_NAME);
+        String login = srs.getString(LOGIN);
+        String email = srs.getString(EMAIL);
+        LocalDate birthday = Objects.requireNonNull(srs.getTimestamp(BIRTHDAY))
                 .toLocalDateTime().toLocalDate();
         return User.builder()
                 .id(id)
@@ -55,15 +65,15 @@ public class UserDbStorage implements UserStorage {
     public User create(User user) {
         Map<String, Object> keys = new SimpleJdbcInsert(this.jdbcTemplate)
                 .withTableName("users")
-                .usingColumns("user_name", "login", "email", "birthday")
-                .usingGeneratedKeyColumns("user_id")
+                .usingColumns(USER_NAME, LOGIN, EMAIL, BIRTHDAY)
+                .usingGeneratedKeyColumns(USER_NAME)
                 .executeAndReturnKeyHolder(Map.of(
-                        "user_name", user.getName(),
-                        "login", user.getLogin(),
-                        "email", user.getEmail(),
-                        "birthday", java.sql.Date.valueOf(user.getBirthday())))
+                        USER_NAME, user.getName(),
+                        LOGIN, user.getLogin(),
+                        EMAIL, user.getEmail(),
+                        BIRTHDAY, java.sql.Date.valueOf(user.getBirthday())))
                 .getKeys();
-        user.setId((Integer) keys.get("user_id"));
+        user.setId((Integer) keys.get(USER_ID));
         return user;
     }
 
@@ -92,7 +102,7 @@ public class UserDbStorage implements UserStorage {
     public User getById(Integer userId) {
         String sqlQuery = "SELECT * FROM users WHERE user_id = ?";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId);
-            return userMap(srs);
+        return userMap(srs);
     }
 
     @Override
