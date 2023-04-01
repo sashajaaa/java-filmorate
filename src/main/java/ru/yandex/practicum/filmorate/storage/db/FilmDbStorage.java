@@ -132,14 +132,9 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> search(String lookFor, int choose) {
         String sql;
         switch (choose) {
-            case 1:
-                sql = requestForSearchInTitle;
-                break;
-
             case 2:
                 sql = requestForSearchInDirector;
                 break;
-
             case 3:
                 sql = requestForSearchInDirectorAndTitle;
                 break;
