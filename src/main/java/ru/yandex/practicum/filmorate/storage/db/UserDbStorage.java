@@ -27,7 +27,7 @@ public class UserDbStorage implements UserStorage {
     private static final String EMAIL = "email";
 
     private static final String BIRTHDAY = "birthday";
-    
+
     private final JdbcTemplate jdbcTemplate;
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
