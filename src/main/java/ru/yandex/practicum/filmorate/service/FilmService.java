@@ -58,6 +58,19 @@ public class FilmService {
         return result;
     }
 
+    public Film delete(Integer filmId) {
+        log.info("Request to delete the movie by ID = " + filmId + " received");
+        if (filmId == null) {
+            throw new NotFoundException("Movie with ID = " + filmId + " not found");
+        }
+        if (filmId < 0) {
+            throw new NotFoundException("Movie with ID = " + filmId + " not found");
+        }
+        if (getById(filmId) == null) {
+            throw new NotFoundException("Movie with ID = " + filmId + " not found");
+        }
+        log.info("Deleted film with id: {}", filmId);
+        return filmStorage.delete(filmId);
     public void delete(int filmId) {
         containsFilm(filmId);
         filmStorage.delete(filmId);

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,10 +14,8 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @ToString
 public class Director {
-
     private int id;
 
-    @NotBlank(message = "Имя режиссера не может быть пустым")
+    @NotBlank(message = "Director`s name can not be blank")
     private String name;
-
 }

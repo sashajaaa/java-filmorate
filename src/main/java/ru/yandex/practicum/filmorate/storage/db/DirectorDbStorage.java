@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.storage.db;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -62,10 +64,10 @@ public class DirectorDbStorage implements DirectorStorage {
 
         SqlRowSet directorRow = getDirectorRowByID(id);
         if (!directorRow.next()) {
-            throw new NotFoundException("Не удалось передать режиссера: режиссер не найден");
+            throw new NotFoundException("Unable to return director: director is not found");
         }
         Director director = buildDirectorFromRow(directorRow);
-        log.info("Передан режиссер {}", director);
+        log.info("Director is returned {}", director);
         return director;
     }
 
@@ -116,6 +118,7 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     private SqlRowSet getIdRowsFromDB(Director director) {
-        return jdbcTemplate.queryForRowSet(requestGetIdByDirector, director.getName());
+        SqlRowSet rows = jdbcTemplate.queryForRowSet(requestGetIdByDirector, director.getName());
+        return rows;
     }
 }

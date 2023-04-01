@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -115,9 +116,10 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public String delete(int filmId) {
-        String sqlQuery = "DELETE FROM films WHERE film_id = ?";
-        return sqlQuery;
+    public Film delete(Integer filmId) {
+        Film film = getById(filmId);
+        jdbcTemplate.execute("DELETE FROM films WHERE film_id = " + filmId);
+        return film;
     }
 
     @Override
@@ -196,7 +198,6 @@ public class FilmDbStorage implements FilmStorage {
                 ps.setInt(1, filmId);
                 ps.setInt(2, genresTable.get(i).getId());
             }
-
             public int getBatchSize() {
                 return genresTable.size();
             }
@@ -248,8 +249,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Set<Genre> getGenres(int filmId) {
-        Comparator<Genre> compId = Comparator.comparing(Genre::getId);
-        Set<Genre> genres = new TreeSet<>(compId);
+        Set<Genre> genres = new TreeSet<>(Comparator.comparing(Genre::getId));
         String sqlQuery = "SELECT film_genres.genre_id, genres.genre_name FROM film_genres "
                 + "JOIN genres ON genres.genre_id = film_genres.genre_id "
                 + "WHERE film_id = ? ORDER BY genre_id ASC";
@@ -258,9 +258,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Set<Director> getDirectors(int filmId) {
-        Set<Director> directors = new TreeSet<>((d1, d2) -> {
-            return d1.getId() - d2.getId();
-        });
+        Set<Director> directors = new TreeSet<>(Comparator.comparingInt(Director::getId));
         String sqlQuery = "SELECT films_directors.director_id, directors.director_name FROM films_directors "
                 + "JOIN directors ON directors.director_id = films_directors.director_id "
                 + "WHERE film_id = ? ORDER BY director_id ASC";
@@ -293,6 +291,30 @@ public class FilmDbStorage implements FilmStorage {
         return films;
     }
 
+    public void addLike(int filmId, int userId) {
+        String sqlQuery = "INSERT INTO likes (film_id, user_id) "
+                + "VALUES (?, ?)";
+        jdbcTemplate.update(sqlQuery, filmId, userId);
+    }
+
+    public void removeLike(int filmId, int userId) {
+        String sqlQuery = "DELETE likes "
+                + "WHERE film_id = ? AND user_id = ?";
+        jdbcTemplate.update(sqlQuery, filmId, userId);
+    }
+
+    public List<Film> getPopular(Integer count) {
+        String sqlQuery = "SELECT * FROM films "
+                + "LEFT JOIN likes ON likes.film_id = films.film_id "
+                + "JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id "
+                + "GROUP BY films.film_id, "
+                + "likes.user_id "
+                + "ORDER BY COUNT (likes.film_id) DESC "
+                + "LIMIT "
+                + count;
+        return jdbcTemplate.query(sqlQuery, this::makeFilm);
+    }
+
     private Genre makeGenre(ResultSet rs, int id) throws SQLException {
         int genreId = rs.getInt("genre_id");
         String genreName = rs.getString("genre_name");
@@ -314,7 +336,7 @@ public class FilmDbStorage implements FilmStorage {
         int mpaId = rs.getInt("rating_id");
         String mpaName = rs.getString("rating_name");
         RatingMpa mpa = new RatingMpa(mpaId, mpaName);
-        Set<Genre> genres = new HashSet<>();
+        Set<Genre> genres = getGenres(filmId);
         Set<Director> directors = new HashSet<>();
         return Film.builder()
                 .id(filmId)

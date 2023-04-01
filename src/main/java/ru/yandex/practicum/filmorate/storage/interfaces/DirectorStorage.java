@@ -12,12 +12,14 @@ public interface DirectorStorage {
 
     public Director getDirectorById(Integer id);
 
-    public Director updateDirector(Director director);
+    List<Director> getAllDirectors();
 
-    public Director deleteDirectorById(Integer id);
+    Director getDirectorById(Integer id);
 
-    public void deleteAllDirectors();
+    Director updateDirector(Director director);
 
     boolean containsDirector(int id);
+    Director deleteDirectorById(Integer id);
 
+    void deleteAllDirectors();
 }

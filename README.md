@@ -510,3 +510,18 @@ feat:
 #### Коммит №11.3:  
 refactor:  
 -Рефактор после замечаний.  
+
+## Спринт №12 (Групповой проект):  
+### Коммиты:
+#### Коммит №12.1:  
+refactor:  
+-Переработан метод delete в классах FilmDbStorage и FilmService;  
+-Переработан метод delete в классе UserDbStorage и UserService;  
+-Испаравлена ER-диаграмма.  
+
+-fix:  
+-Исправлена ошибка в методе DeleteById в классе FilmController;  
+-Исправлена ошибка в методе DeleteById в классе UserController.  
+
+Style:  
+-Косметические изменения по всему проекту.
