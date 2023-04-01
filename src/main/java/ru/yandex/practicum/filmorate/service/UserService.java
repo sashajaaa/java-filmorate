@@ -45,12 +45,19 @@ public class UserService {
         return result;
     }
 
-    public void delete(int userId) {
-        if (getById(userId) == null) {
-            throw new NotFoundException("User with ID = " + userId + " not found");
+    public User delete(Integer userId) {
+        log.info("Request to delete the user by ID = " + userId + " received");
+        if (userId == null) {
+            throw new NotFoundException("Movie with ID = " + userId + " not found");
         }
-        log.info("Deleted film with id: {}", userId);
-        storage.delete(userId);
+        if (userId < 0) {
+            throw new NotFoundException("Movie with ID = " + userId + " not found");
+        }
+        if (getById(userId) == null) {
+            throw new NotFoundException("Movie with ID = " + userId + " not found");
+        }
+        log.info("Deleted user with id: {}", userId);
+        return storage.delete(userId);
     }
 
     public User getById(Integer id) {

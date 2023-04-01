@@ -20,8 +20,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Slf4j
 @Repository
@@ -80,7 +89,6 @@ public class FilmDbStorage implements FilmStorage {
         Film buffFilm = getById(film.getId());
         int filmId;
         try {
-
             String sqlQuery = "UPDATE films "
                     + "SET film_name = ?, "
                     + "description = ?, "
@@ -104,9 +112,10 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public String delete(int filmId) {
-        String sqlQuery = "DELETE FROM films WHERE film_id = ?";
-        return sqlQuery;
+    public Film delete(Integer filmId) {
+        Film film = getById(filmId);
+        jdbcTemplate.execute("DELETE FROM films WHERE film_id = " + filmId);
+        return film;
     }
 
     @Override
@@ -135,7 +144,6 @@ public class FilmDbStorage implements FilmStorage {
                 ps.setInt(1, filmId);
                 ps.setInt(2, genresTable.get(i).getId());
             }
-
             public int getBatchSize() {
                 return genresTable.size();
             }
@@ -195,15 +203,12 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Set<Director> getDirectors(int filmId) {
-        Set<Director> directors = new TreeSet<>((d1, d2) -> {
-            return d1.getId() - d2.getId();
-        });
+        Set<Director> directors = new TreeSet<>(Comparator.comparingInt(Director::getId));
         String sqlQuery = "SELECT films_directors.director_id, directors.director_name FROM films_directors "
                 + "JOIN directors ON directors.director_id = films_directors.director_id "
                 + "WHERE film_id = ? ORDER BY director_id ASC";
         directors.addAll(jdbcTemplate.query(sqlQuery, this::makeDirector, filmId));
         return directors;
-
     }
 
     private void deleteAllDirectorsByFilmId(int filmId) {
@@ -232,26 +237,12 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "SELECT * FROM films "
                 + "LEFT JOIN likes ON likes.film_id = films.film_id "
                 + "JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id "
-                + "GROUP BY films.film_id "
+                + "GROUP BY films.film_id, "
+                + "likes.user_id "
                 + "ORDER BY COUNT (likes.film_id) DESC "
                 + "LIMIT "
                 + count;
         return jdbcTemplate.query(sqlQuery, this::makeFilm);
-    }
-
-    private List<Film> addGenreForList(List<Film> films) {
-        Map<Integer, Film> filmsTable = films.stream().collect(Collectors.toMap(Film::getId, film -> film));
-        String inSql = String.join(", ", Collections.nCopies(filmsTable.size(), "?"));
-        final String sqlQuery = "SELECT * "
-                + "FROM film_genres "
-                + "LEFT OUTER JOIN genres ON film_genres.genre_id = genres.genre_id "
-                + "WHERE film_genres.film_id IN (" + inSql + ") "
-                + "ORDER BY film_genres.genre_id";
-        jdbcTemplate.query(sqlQuery, (rs) -> {
-            filmsTable.get(rs.getInt("film_id")).addGenre(new Genre(rs.getInt("genre_id"),
-                    rs.getString("genre_name")));
-        }, filmsTable.keySet().toArray());
-        return films;
     }
 
     private Genre makeGenre(ResultSet rs, int id) throws SQLException {
