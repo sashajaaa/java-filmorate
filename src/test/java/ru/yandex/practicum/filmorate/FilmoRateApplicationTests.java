@@ -77,6 +77,7 @@ class FilmoRateApplicationTests {
                 .login("sashajaaa")
                 .email("sashajaaa@yandex.ru")
                 .birthday(LocalDate.now().minusYears(35))
+                .likes(new HashSet<>())
                 .build();
         User user2 = User.builder()
                 .id(2)
@@ -84,6 +85,7 @@ class FilmoRateApplicationTests {
                 .login("sashaja")
                 .email("sashaja@inbox.ru")
                 .birthday(LocalDate.now().minusYears(35))
+                .likes(new HashSet<>())
                 .build();
         userDbStorage.create(user1);
         userDbStorage.create(user2);
