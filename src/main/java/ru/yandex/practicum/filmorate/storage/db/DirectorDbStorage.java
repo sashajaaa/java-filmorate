@@ -2,12 +2,9 @@ package ru.yandex.practicum.filmorate.storage.db;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 
@@ -111,7 +108,6 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     private SqlRowSet getIdRowsFromDB(Director director) {
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(requestGetIdByDirector, director.getName());
-        return rows;
+        return jdbcTemplate.queryForRowSet(requestGetIdByDirector, director.getName());
     }
 }
