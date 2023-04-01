@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -106,18 +105,16 @@ public class UserService {
     }
 
     public List<Film> getRecommendations(int userId) {
-        List<Film> recommendations = new ArrayList<>();
-        List<Integer> usersLikesSameFilms = new ArrayList<>();
         if (storage.getById(userId) == null) {
             throw new NotFoundException("User with ID = " + userId + " not found");
         }
-        User user = storage.getById(userId);
+        List<Film> recommendations = new ArrayList<>();
         Set<Integer> userLikes = storage.getById(userId).getLikes();
         if (userLikes.isEmpty()) {
             return recommendations;
         }
+        List<Integer> usersLikesSameFilms = new ArrayList<>();
         for (Integer filmId : userLikes) {
-            Film film = filmStorage.getById(filmId);
             usersLikesSameFilms.addAll(filmStorage.getById(filmId).getLikes());
         }
         Map<Integer, Long> repetitions = usersLikesSameFilms.stream()
@@ -129,13 +126,13 @@ public class UserService {
         Optional<Integer> idUserWithSameLikes = repetitions.entrySet().stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey);
-        User userWithSameLikes = storage.getById(idUserWithSameLikes.get());
-        List<Integer> recInteger = new ArrayList<>();
-        recInteger.addAll(userWithSameLikes.getLikes());
-        recInteger.removeAll(storage.getById(userId).getLikes());
-        for (Integer filmId : recInteger) {
-            Film filmToRec = filmStorage.getById(filmId);
-            recommendations.add(filmToRec);
+        User userForGetRecommendations = storage.getById(idUserWithSameLikes.get());
+        List<Integer> idsRecommendedMovies = new ArrayList<>();
+        idsRecommendedMovies.addAll(userForGetRecommendations.getLikes());
+        for (Integer filmId : idsRecommendedMovies) {
+            if (!userLikes.contains(filmId)) {
+                recommendations.add(filmStorage.getById(filmId));
+            }
         }
         log.info("For user {} recommended {} films from user {}.", userId, recommendations.size(),
                 idUserWithSameLikes.get());

@@ -1,16 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
-import java.sql.Types;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
@@ -135,10 +131,6 @@ public class UserDbStorage implements UserStorage {
     private Set<Integer> getLikes(int userId) {
         String sqlQuery = "SELECT film_id FROM likes WHERE user_id = ?";
         List<Integer> foundFilmLikes = jdbcTemplate.queryForList(sqlQuery, Integer.class, userId);
-        /*List<Integer> foundUserLikes = jdbcTemplate.query(sqlQuery,
-                new Object[]{userId},
-                new int[]{Types.INTEGER},
-                (rs, rowNum) -> rs.getInt("film_id"));*/
         Set<Integer> likes = new HashSet<>(foundFilmLikes);
         return likes;
     }
