@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
-import java.sql.Types;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -183,10 +182,6 @@ public class FilmDbStorage implements FilmStorage {
     private Set<Integer> getLikes(int filmId) {
         String sqlQuery = "SELECT user_id FROM likes WHERE film_id = ?";
         List<Integer> foundFilmLikes = jdbcTemplate.queryForList(sqlQuery, Integer.class, filmId);
-        /*List<Integer> foundFilmLikes = jdbcTemplate.query(sqlQuery,
-                new Object[]{filmId},
-                new int[]{Types.INTEGER},
-                (rs, rowNum) -> rs.getInt("film_id"));*/
         Set<Integer> likes = new HashSet<>(foundFilmLikes);
         return likes;
     }
