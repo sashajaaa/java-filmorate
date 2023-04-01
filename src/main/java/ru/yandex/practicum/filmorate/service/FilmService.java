@@ -104,8 +104,8 @@ public class FilmService {
         }
     }
 
-    public List<Film> getPopular(Integer count) {
-        List<Film> result = new ArrayList<>(filmStorage.getPopular(count));
+    public List<Film> getPopular(Integer count, Integer genreId, Integer year) {
+        List<Film> result = new ArrayList<>(filmStorage.getPopular(count, genreId, year));
         log.info("Requested a list of popular movies");
         return result;
     }
