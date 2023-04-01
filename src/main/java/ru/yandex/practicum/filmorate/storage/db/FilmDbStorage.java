@@ -284,6 +284,7 @@ public class FilmDbStorage implements FilmStorage {
         RatingMpa mpa = new RatingMpa(mpaId, mpaName);
         Set<Genre> genres = new HashSet<>();
         Set<Director> directors = new HashSet<>();
+        Set<Integer> likes = getLikes(id);
         return Film.builder()
                 .id(filmId)
                 .name(name)
@@ -293,6 +294,7 @@ public class FilmDbStorage implements FilmStorage {
                 .mpa(mpa)
                 .releaseDate(releaseDate)
                 .directors(directors)
+                .likes(likes)
                 .build();
     }
 
