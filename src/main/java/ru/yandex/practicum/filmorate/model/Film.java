@@ -1,10 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -18,6 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Film {
     private int id;
 
@@ -37,6 +35,8 @@ public class Film {
     private Set<Genre> genres = new HashSet<>();
 
     private RatingMpa mpa;
+
+    private Set<Director> directors = new HashSet<>();
 
     @JsonIgnore
     private Set<Integer> likes = new HashSet<>();
@@ -60,4 +60,6 @@ public class Film {
     public void removeGenre(Genre genre) {
         genres.remove(genre);
     }
+
+
 }

@@ -34,6 +34,10 @@ public class FilmService {
         this.filmStorage = filmStorage;
     }
 
+    public List<Film> getDirectorsFilmsSortedBy(int directorId, String sortBy) {
+        return filmStorage.getDirectorsFilms(directorId, sortBy);
+    }
+
     public Collection<Film> getAll() {
         log.info("List of all movies: " + filmStorage.getAll().size());
         return filmStorage.getAll();
