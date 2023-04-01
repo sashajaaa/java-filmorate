@@ -72,7 +72,7 @@ class FilmoRateApplicationTests {
     }
 
     @Test
-    void getFilmById_shouldConfirmThatFilmIdExists(){
+    void getFilmById_shouldConfirmThatFilmIdExists() {
         Film film = Film.builder()
                 .id(1)
                 .name("Avatar")
