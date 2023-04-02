@@ -311,7 +311,7 @@ public class FilmDbStorage implements FilmStorage {
         String name = rs.getString("film_name");
         String description = rs.getString("description");
         int duration = rs.getInt("duration");
-        LocalDate releaseDate = rs.getTimestamp("release_date").toLocalDateTime().toLocalDate();
+        LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
         int mpaId = rs.getInt("rating_id");
         String mpaName = rs.getString("rating_name");
         RatingMpa mpa = new RatingMpa(mpaId, mpaName);
@@ -334,8 +334,7 @@ public class FilmDbStorage implements FilmStorage {
         String name = srs.getString("film_name");
         String description = srs.getString("description");
         int duration = srs.getInt("duration");
-        LocalDate releaseDate = Objects.requireNonNull(srs.getTimestamp("release_date"))
-                .toLocalDateTime().toLocalDate();
+        LocalDate releaseDate = Objects.requireNonNull(srs.getDate("release_date")).toLocalDate();
         int mpaId = srs.getInt("rating_id");
         String mpaName = srs.getString("rating_name");
         RatingMpa mpa = new RatingMpa(mpaId, mpaName);
