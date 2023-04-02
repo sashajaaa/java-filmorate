@@ -36,15 +36,22 @@ import java.util.TreeSet;
 @Repository
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Value("${director.get-filmsId-sorted-by-likes}")
     private String requestFilmIdByLikes;
     @Value("${director.get-filmsId-sorted-by-year}")
     private String requestFilmIdByYear;
+    @Value("${film.requestForContainsFilm}")
+    private String requestForFilmId;
+    @Value("${film.requestForSearchInTitle}")
+    private String requestForSearchInTitle;
+    @Value("${film.requestForSearchInDirector}")
+    private String requestForSearchInDirector;
+    @Value("${film.requestForSearchInDirectorAndTitle}")
+    private String requestForSearchInDirectorAndTitle;
+
+    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Collection<Film> getAll() {
@@ -140,8 +147,13 @@ public class FilmDbStorage implements FilmStorage {
             log.info("Director's {} films are not found", directorId);
             throw new NotFoundException("Director's " + directorId + " films are not found");
         }
-        log.info("Director's {} list of films{} sorted by {} is returned", directorId, films,sortBy);
+        log.info("Director's {} list of films{} sorted by {} is returned", directorId, films, sortBy);
         return films;
+    }
+
+    @Override
+    public boolean containsFilm(int id) {
+        return jdbcTemplate.queryForRowSet(requestForFilmId, id).next();
     }
 
     public void addLike(int filmId, int userId) {

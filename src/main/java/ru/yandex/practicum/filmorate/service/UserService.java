@@ -48,6 +48,7 @@ public class UserService {
     }
 
     public User update(User user) {
+        containsUser(user.getId());
         validate(user, "User update form is filled in incorrectly");
         preSave(user);
         User result = storage.update(user);
@@ -57,54 +58,48 @@ public class UserService {
 
     public User delete(Integer userId) {
         log.info("Request to delete the user by ID = " + userId + " received");
-        if (userId == null) {
-            throw new NotFoundException("User with ID = " + userId + " not found");
-        }
-        if (userId < 0) {
-            throw new NotFoundException("User with ID = " + userId + " not found");
-        }
-        if (getById(userId) == null) {
-            throw new NotFoundException("User with ID = " + userId + " not found");
-        }
+        containsUser(userId);
         log.info("Deleted user with id: {}", userId);
         return storage.delete(userId);
     }
 
     public User getById(Integer id) {
+        containsUser(id);
         log.info("Requested user with ID = " + id);
         return storage.getById(id);
     }
 
     public void addFriend(Integer userId, Integer friendId) {
-        checkUser(userId, friendId);
+        containsUser(userId);
+        containsUser(friendId);
         storage.addFriend(userId, friendId);
         log.info("Friend successfully added");
     }
 
     public void removeFriend(Integer userId, Integer friendId) {
-        checkUser(userId, friendId);
+        containsUser(userId);
+        containsUser(friendId);
         storage.removeFriend(userId, friendId);
         log.info("Friend successfully removed");
     }
 
     public List<User> getAllFriends(Integer userId) {
-        checkUser(userId, userId);
+        containsUser(userId);
         List<User> result = storage.getFriends(userId);
         log.info("Friends of user with ID = " + userId + result);
         return result;
     }
 
-    public List<User> getCommonFriends(Integer user1Id, Integer user2Id) {
-        checkUser(user1Id, user2Id);
-        List<User> result = storage.getCommonFriends(user1Id, user2Id);
-        log.info("Common friends of users with ID " + " {} and {} {} ", user1Id, user2Id, result);
+    public List<User> getCommonFriends(Integer userId, Integer otherUserId) {
+        containsUser(userId);
+        containsUser(otherUserId);
+        List<User> result = storage.getCommonFriends(userId, otherUserId);
+        log.info("Common friends of users with ID " + " {} and {} {} ", userId, otherUserId, result);
         return result;
     }
 
     public List<Film> getRecommendations(int userId) {
-        if (storage.getById(userId) == null) {
-            throw new NotFoundException("User with ID = " + userId + " not found");
-        }
+        containsUser(userId);
         List<Film> recommendations = new ArrayList<>();
         Set<Integer> userLikes = storage.getById(userId).getLikes();
         if (userLikes.isEmpty()) {
@@ -136,11 +131,6 @@ public class UserService {
         return recommendations;
     }
 
-    private void checkUser(Integer userId, Integer friendId) {
-        storage.getById(userId);
-        storage.getById(friendId);
-    }
-
     private void validate(User user, String message) {
         if (user.getBirthday().isAfter(LocalDate.now())) {
             log.debug(message);
@@ -151,6 +141,12 @@ public class UserService {
     private void preSave(User user) {
         if (user.getName().isBlank()) {
             user.setName(user.getLogin());
+        }
+    }
+
+    private void containsUser(int id) {
+        if (!storage.containsUser(id)) {
+            throw new NotFoundException("User with id=" + id + " not exist. ");
         }
     }
 }

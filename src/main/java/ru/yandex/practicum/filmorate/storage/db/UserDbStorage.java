@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
-import java.util.HashSet;
-import java.util.Set;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -13,12 +11,15 @@ import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 @Repository
 public class UserDbStorage implements UserStorage {
+    private static final String GET_USER_ID = "SELECT user_id FROM users WHERE user_id=?";
     private final JdbcTemplate jdbcTemplate;
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
@@ -84,6 +85,11 @@ public class UserDbStorage implements UserStorage {
         }
     }
 
+    @Override
+    public boolean containsUser(int id) {
+        return jdbcTemplate.queryForRowSet(GET_USER_ID, id).next();
+    }
+
     public void addFriend(int userId, int friendId) {
         String sqlQuery = "INSERT INTO friends (user_id, friend_id, status) "
                 + "VALUES(?, ?, ?)";
@@ -99,7 +105,7 @@ public class UserDbStorage implements UserStorage {
     public List<User> getFriends(int userId) {
         List<User> friends = new ArrayList<>();
         String sqlQuery = "SELECT * FROM users "
-                + "WHERE users.user_id IN (SELECT friend_id from friends "
+                + "WHERE users.user_id IN (SELECT friend_id FROM friends "
                 + "WHERE user_id = ?)";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId);
         while (srs.next()) {
@@ -111,7 +117,7 @@ public class UserDbStorage implements UserStorage {
     public List<User> getCommonFriends(int friend1, int friend2) {
         List<User> commonFriends = new ArrayList<>();
         String sqlQuery = "SELECT * FROM users "
-                + "WHERE users.user_id IN (SELECT friend_id from friends "
+                + "WHERE users.user_id IN (SELECT friend_id FROM friends "
                 + "WHERE user_id IN (?, ?) "
                 + "AND friend_id NOT IN (?, ?))";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, friend1, friend2, friend1, friend2);
