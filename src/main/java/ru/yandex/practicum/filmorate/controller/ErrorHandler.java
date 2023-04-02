@@ -2,10 +2,12 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 @Slf4j
@@ -19,6 +21,13 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidationException(final MethodArgumentNotValidException e) {
+        log.error(HttpStatus.BAD_REQUEST.toString(), e);
+        return new ErrorResponse(e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(final NotFoundException e) {
         log.error(HttpStatus.NOT_FOUND.toString(), e);
@@ -27,8 +36,15 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleRunTimeException(final RuntimeException e){
+    public ErrorResponse handleRunTimeException(final RuntimeException e) {
         log.error(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleObjectAlreadyExistsException(final ObjectAlreadyExistsException e) {
+        log.error(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 

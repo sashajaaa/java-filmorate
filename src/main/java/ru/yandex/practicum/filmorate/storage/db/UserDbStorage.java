@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -65,9 +67,10 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public String delete(int userId) {
-        String sqlQuery = "DELETE FROM users WHERE user_id = " + userId;
-        return sqlQuery;
+    public User delete(Integer userId) {
+        User user = getById(userId);
+        jdbcTemplate.execute("DELETE FROM users WHERE user_id = " + userId);
+        return user;
     }
 
     @Override
@@ -88,7 +91,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     public void removeFriend(int userId, int friendId) {
-        String sqlQuery = "DELETE friends "
+        String sqlQuery = "DELETE FROM friends "
                 + "WHERE user_id = ? AND friend_id = ?";
         jdbcTemplate.update(sqlQuery, userId, friendId);
     }
@@ -100,7 +103,7 @@ public class UserDbStorage implements UserStorage {
                 + "WHERE user_id = ?)";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId);
         while (srs.next()) {
-            friends.add(UserDbStorage.userMap(srs));
+            friends.add(userMap(srs));
         }
         return friends;
     }
@@ -113,7 +116,7 @@ public class UserDbStorage implements UserStorage {
                 + "AND friend_id NOT IN (?, ?))";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, friend1, friend2, friend1, friend2);
         while (srs.next()) {
-            commonFriends.add(UserDbStorage.userMap(srs));
+            commonFriends.add(userMap(srs));
         }
         return commonFriends;
     }
@@ -125,19 +128,28 @@ public class UserDbStorage implements UserStorage {
         return srs.next();
     }
 
-    private static User userMap(SqlRowSet srs) {
+    private Set<Integer> getLikes(int userId) {
+        String sqlQuery = "SELECT film_id FROM likes WHERE user_id = ?";
+        List<Integer> foundFilmLikes = jdbcTemplate.queryForList(sqlQuery, Integer.class, userId);
+        Set<Integer> likes = new HashSet<>(foundFilmLikes);
+        return likes;
+    }
+
+    private User userMap(SqlRowSet srs) {
         int id = srs.getInt("user_id");
         String name = srs.getString("user_name");
         String login = srs.getString("login");
         String email = srs.getString("email");
         LocalDate birthday = Objects.requireNonNull(srs.getTimestamp("birthday"))
                 .toLocalDateTime().toLocalDate();
+        Set<Integer> likes = getLikes(id);
         return User.builder()
                 .id(id)
                 .name(name)
                 .login(login)
                 .email(email)
                 .birthday(birthday)
+                .likes(likes)
                 .build();
     }
 }

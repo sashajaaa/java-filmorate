@@ -32,8 +32,10 @@ public class User {
     @NotNull
     private LocalDate birthday;
 
+    private Set<Integer> likes;
+
     @JsonIgnore
-    final private Set<Integer> friendIds = new HashSet<>();
+    private final Set<Integer> friendIds = new HashSet<>();
 
     public void addFriend(Integer id) {
         friendIds.add(id);

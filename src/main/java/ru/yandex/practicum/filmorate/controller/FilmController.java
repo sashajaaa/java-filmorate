@@ -36,18 +36,22 @@ public class FilmController {
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        filmService.create(film);
-        return film;
+        return filmService.create(film);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getDirectorsFilmsSortedBy(@PathVariable int directorId, @RequestParam(defaultValue = "likes") String sortBy) {
+        log.info("Director`s {} films list sorted by request {}", directorId, sortBy);
+        return filmService.getDirectorsFilmsSortedBy(directorId, sortBy);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        filmService.update(film);
-        return film;
+        return filmService.update(film);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable int filmId) {
+    @DeleteMapping("/{filmId}")
+    public void deleteById(@PathVariable Integer filmId) {
         filmService.delete(filmId);
     }
 

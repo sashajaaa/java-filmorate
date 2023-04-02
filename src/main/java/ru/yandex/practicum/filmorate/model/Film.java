@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -18,6 +19,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Film {
     private int id;
 
@@ -38,8 +40,10 @@ public class Film {
 
     private RatingMpa mpa;
 
+    private Set<Director> directors = new HashSet<>();
+
     @JsonIgnore
-    final private Set<Integer> likes = new HashSet<>();
+    private Set<Integer> likes = new HashSet<>();
 
     public void addLike(Integer id) {
         likes.add(id);

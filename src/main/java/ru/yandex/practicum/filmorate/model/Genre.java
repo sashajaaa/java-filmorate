@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotBlank;
@@ -16,6 +17,7 @@ import javax.validation.constraints.Positive;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Genre {
 
     @Positive
