@@ -16,4 +16,6 @@ public interface DirectorStorage {
     Director deleteDirectorById(Integer id);
 
     void deleteAllDirectors();
+
+    boolean containsDirector(int id);
 }

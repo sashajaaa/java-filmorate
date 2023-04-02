@@ -19,11 +19,6 @@ import java.util.List;
 @Slf4j
 public class DirectorDbStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    public DirectorDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Value("${director.get-id-by-director}")
     private String requestGetIdByDirector;
     @Value("${director.insert-director}")
@@ -39,6 +34,9 @@ public class DirectorDbStorage implements DirectorStorage {
     @Value("${director.update-director}")
     private String requestUpdateDirector;
 
+    public DirectorDbStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Director addDirector(Director director) {
@@ -120,13 +118,17 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public void deleteAllDirectors() {
-
         SqlRowSet idsRow = jdbcTemplate.queryForRowSet(requestAllIDs);
         while (idsRow.next()) {
             jdbcTemplate.execute(requestDeleteById + idsRow.getInt("director_id"));
         }
         jdbcTemplate.execute(requestResetPK);
         log.info("Directors table is dropped");
+    }
+
+    @Override
+    public boolean containsDirector(int id) {
+        return jdbcTemplate.queryForRowSet(requestGetDirectorById, id).next();
     }
 
     private Director buildDirectorFromRow(SqlRowSet row) {
