@@ -36,6 +36,7 @@ public class FilmController {
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
+        log.info("Request fot creating new film");
         return filmService.create(film);
     }
 
@@ -47,37 +48,44 @@ public class FilmController {
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
+        log.info("Request fot updating film");
         return filmService.update(film);
     }
 
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable int id) {
+        log.info("Request fot deleting film");
         filmService.delete(id);
     }
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable int id) {
+        log.info("Request fot get film with id= {}", id);
         return filmService.getById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable int id, @PathVariable int userId) {
+        log.info("Request fot add like to film with id= {} from user with id= ", id, userId);
         filmService.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(@PathVariable int id, @PathVariable int userId) {
+        log.info("Request fot remove like to film with id= {} from user with id= ", id, userId);
         filmService.removeLike(id, userId);
     }
 
     @GetMapping("/popular")
     public List<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
+        log.info("Request fot get first {} most popular films", count);
         return filmService.getPopular(count);
     }
 
     @GetMapping("/search")
     public List<Film> search(@RequestParam String query,
                              @RequestParam(defaultValue = "title") String by) {
+        log.info("Request fot get films by substring {}", query);
         return filmService.search(query, by);
     }
 }

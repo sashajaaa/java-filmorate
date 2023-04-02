@@ -34,23 +34,22 @@ import java.util.TreeSet;
 @Slf4j
 @Repository
 public class FilmDbStorage implements FilmStorage {
-    private static final String FILM_ID = "film_id";
-    private static final String FILM_NAME = "film_name";
-    private static final String DESCRIPTION = "description";
-    private static final String DURATION = "duration";
-    private static final String RATING_ID = "rating_id";
-    private static final String RELEASE_DATE = "release_date";
     private final JdbcTemplate jdbcTemplate;
     @Value("${director.get-filmsId-sorted-by-likes}")
     private String requestFilmIdByLikes;
+
     @Value("${director.get-filmsId-sorted-by-year}")
     private String requestFilmIdByYear;
+
     @Value("${film.requestForContainsFilm}")
     private String requestForFilmId;
+
     @Value("${film.requestForSearchInTitle}")
     private String requestForSearchInTitle;
+
     @Value("${film.requestForSearchInDirector}")
     private String requestForSearchInDirector;
+
     @Value("${film.requestForSearchInDirectorAndTitle}")
     private String requestForSearchInDirectorAndTitle;
 
@@ -63,7 +62,7 @@ public class FilmDbStorage implements FilmStorage {
         SqlRowSet filmsIdRow = jdbcTemplate.queryForRowSet("SELECT film_id FROM films");
         List<Film> films = new ArrayList<>();
         while (filmsIdRow.next()) {
-            films.add(getById(filmsIdRow.getInt(FILM_ID)));
+            films.add(getById(filmsIdRow.getInt("film_id")));
         }
         Collections.sort(films, (f1, f2) -> f1.getId() - f2.getId());
         return films;
@@ -73,18 +72,20 @@ public class FilmDbStorage implements FilmStorage {
     public Film create(Film film) {
         Map<String, Object> keys = new SimpleJdbcInsert(this.jdbcTemplate)
                 .withTableName("films")
-                .usingColumns(FILM_NAME, DESCRIPTION, DURATION, RELEASE_DATE, RATING_ID)
-                .usingGeneratedKeyColumns(FILM_ID)
-                .executeAndReturnKeyHolder(Map.of(FILM_NAME, film.getName(),
-                        DESCRIPTION, film.getDescription(),
-                        DURATION, film.getDuration(),
-                        RELEASE_DATE, java.sql.Date.valueOf(film.getReleaseDate()),
-                        RATING_ID, film.getMpa().getId()))
+                .usingColumns("film_name", "description", "duration", "release_date", "rating_id")
+                .usingGeneratedKeyColumns("film_id")
+                .executeAndReturnKeyHolder(Map.of("film_name", film.getName(),
+                        "description", film.getDescription(),
+                        "duration", film.getDuration(),
+                        "release_date", java.sql.Date.valueOf(film.getReleaseDate()),
+                        "rating_id", film.getMpa().getId()))
                 .getKeys();
-        film.setId((Integer) keys.get(FILM_ID));
-        addGenre((Integer) keys.get(FILM_ID), film.getGenres());
-        addDirectors((Integer) keys.get(FILM_ID), film.getDirectors());
-        return getById((Integer) keys.get(FILM_ID));
+        int id = (Integer) keys.get("film_id");
+        film.setId(id);
+        System.out.println("new film id " + id);
+        addGenre(id, film.getGenres());
+        addDirectors(id, film.getDirectors());
+        return getById(id);
     }
 
     /**
@@ -120,45 +121,47 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film delete(Integer filmId) {
+    public Film delete(int filmId) {
         Film film = getById(filmId);
         jdbcTemplate.execute("DELETE FROM films WHERE film_id = " + filmId);
         return film;
     }
 
     @Override
-    public Film getById(Integer filmId) {
-        String sqlQuery = "SELECT * FROM films "
-                + "JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id "
-                + "WHERE film_id = ?";
-        return filmMap(jdbcTemplate.queryForRowSet(sqlQuery, filmId));
+    public Film getById(int filmId) {
+        String sqlQuery = "SELECT f.film_id, f.film_name, f.description, f.duration, " +
+                "f.release_date, f.rating_id, r.rating_name AS ratingname FROM films f "
+                + "JOIN rating_mpa r ON f.rating_id = r.rating_id "
+                + "WHERE film_id = ? ";
+        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, filmId);
+        return filmMap(srs);
     }
 
     @Override
     public List<Film> search(String lookFor, int choose) {
-        String sql;
+        SqlRowSet rs;
+        String founding = "%" + lookFor + "%";
         switch (choose) {
             case 2:
-                sql = requestForSearchInDirector;
+                rs = jdbcTemplate.queryForRowSet(requestForSearchInDirector, founding);
                 break;
             case 3:
-                sql = requestForSearchInDirectorAndTitle;
+                rs = jdbcTemplate.queryForRowSet(requestForSearchInDirectorAndTitle, founding, founding);
                 break;
             default:
-                sql = requestForSearchInTitle;
+                rs = jdbcTemplate.queryForRowSet(requestForSearchInTitle, founding, founding);
                 break;
         }
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(sql);
         List<Film> films = new LinkedList<>();
         while (rs.next()) {
-            int filmId = rs.getInt(FILM_ID);
+            int filmId = rs.getInt("film_id");
             Film film = Film.builder()
                     .id(filmId)
-                    .name(rs.getString(FILM_NAME))
-                    .releaseDate(rs.getDate(RELEASE_DATE).toLocalDate())
-                    .description(rs.getString(DESCRIPTION))
-                    .duration(rs.getInt(DURATION))
-                    .mpa(new RatingMpa(rs.getInt(RATING_ID), rs.getString("gating_name")))
+                    .name(rs.getString("film_name"))
+                    .releaseDate(rs.getDate("release_date").toLocalDate())
+                    .description(rs.getString("description"))
+                    .duration(rs.getInt("duration"))
+                    .mpa(new RatingMpa(rs.getInt("rating_id"), rs.getString("rating_name")))
                     .build();
             film.setGenres(getGenres(filmId));
             film.setDirectors(getDirectors(filmId));
@@ -179,7 +182,7 @@ public class FilmDbStorage implements FilmStorage {
         }
         List<Film> films = new LinkedList<>();
         while (filmIdRow.next()) {
-            films.add(getById(filmIdRow.getInt(FILM_ID)));
+            films.add(getById(filmIdRow.getInt("film_id")));
         }
         return films;
     }
@@ -295,12 +298,12 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Film makeFilm(ResultSet rs, int id) throws SQLException {
-        int filmId = rs.getInt(FILM_ID);
-        String name = rs.getString(FILM_NAME);
-        String description = rs.getString(DESCRIPTION);
-        int duration = rs.getInt(DURATION);
-        LocalDate releaseDate = rs.getTimestamp(RELEASE_DATE).toLocalDateTime().toLocalDate();
-        int mpaId = rs.getInt(RATING_ID);
+        int filmId = rs.getInt("film_id");
+        String name = rs.getString("film_name");
+        String description = rs.getString("description");
+        int duration = rs.getInt("duration");
+        LocalDate releaseDate = rs.getTimestamp("release_date").toLocalDateTime().toLocalDate();
+        int mpaId = rs.getInt("rating_id");
         String mpaName = rs.getString("rating_name");
         RatingMpa mpa = new RatingMpa(mpaId, mpaName);
         Set<Genre> genres = getGenres(filmId);
@@ -318,14 +321,14 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Film filmMap(SqlRowSet srs) {
-        int id = srs.getInt(FILM_ID);
-        String name = srs.getString(FILM_NAME);
-        String description = srs.getString(DESCRIPTION);
-        int duration = srs.getInt(DURATION);
-        LocalDate releaseDate = Objects.requireNonNull(srs.getTimestamp(RELEASE_DATE))
+        Integer id = srs.getInt("FILM_ID");
+        String name = srs.getString("FILM_NAME");
+        String description = srs.getString("DESCRIPTION");
+        int duration = srs.getInt("DURATION");
+        LocalDate releaseDate = Objects.requireNonNull(srs.getTimestamp("RELEASE_DATE"))
                 .toLocalDateTime().toLocalDate();
-        int mpaId = srs.getInt(RATING_ID);
-        String mpaName = srs.getString("rating_name");
+        int mpaId = srs.getInt("RATING_ID");
+        String mpaName = srs.getString("RATINGNAME");
         RatingMpa mpa = new RatingMpa(mpaId, mpaName);
         Set<Genre> genres = getGenres(id);
         Set<Director> directors = getDirectors(id);

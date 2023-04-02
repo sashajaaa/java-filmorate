@@ -58,12 +58,12 @@ public class FilmService {
         return result;
     }
 
-    public Film delete(Integer filmId) {
+    public Film delete(int filmId) {
         containsFilm(filmId);
         return filmStorage.delete(filmId);
     }
 
-    public Film getById(Integer id) {
+    public Film getById(int id) {
         containsFilm(id);
         log.info("Requested user with ID = " + id);
         return filmStorage.getById(id);

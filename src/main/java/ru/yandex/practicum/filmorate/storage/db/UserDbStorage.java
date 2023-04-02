@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,36 +20,10 @@ import java.util.Objects;
 public class UserDbStorage implements UserStorage {
     private static final String GET_USER_ID = "SELECT user_id FROM users WHERE user_id=?";
 
-    private static final String USER_ID = "user_id";
-
-    private static final String USER_NAME = "user_name";
-
-    private static final String LOGIN = "login";
-
-    private static final String EMAIL = "email";
-
-    private static final String BIRTHDAY = "birthday";
-
     private final JdbcTemplate jdbcTemplate;
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-    private static User userMap(SqlRowSet srs) {
-        int id = srs.getInt(USER_ID);
-        String name = srs.getString(USER_NAME);
-        String login = srs.getString(LOGIN);
-        String email = srs.getString(EMAIL);
-        LocalDate birthday = Objects.requireNonNull(srs.getTimestamp(BIRTHDAY))
-                .toLocalDateTime().toLocalDate();
-        return User.builder()
-                .id(id)
-                .name(name)
-                .login(login)
-                .email(email)
-                .birthday(birthday)
-                .build();
     }
 
     @Override
@@ -79,7 +55,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User update(User user) {
-        getById(user.getId());
+        //getById(user.getId());
         String sqlQuery = "UPDATE users "
                 + "SET user_name = ?, "
                 + "login = ?, "
@@ -92,17 +68,16 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User delete(Integer userId) {
+    public User delete(int userId) {
         User user = getById(userId);
         jdbcTemplate.execute("DELETE FROM users WHERE user_id = " + userId);
         return user;
     }
 
     @Override
-    public User getById(Integer userId) {
+    public User getById(int userId) {
         String sqlQuery = "SELECT * FROM users WHERE user_id = ?";
-        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId);
-        return userMap(srs);
+        return  jdbcTemplate.queryForObject(sqlQuery, this::mapRowToUser, userId);
     }
 
     @Override
@@ -152,5 +127,32 @@ public class UserDbStorage implements UserStorage {
                 + "user_id = ? AND friend_id = ?";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
         return srs.next();
+    }
+
+    private static User userMap(SqlRowSet srs) {
+        int id = srs.getInt("user_id");
+        System.out.println("-----------------id " + id);
+        String name = srs.getString("user_name");
+        String login = srs.getString("login");
+        String email = srs.getString("email");
+        LocalDate birthday = Objects.requireNonNull(srs.getTimestamp("birthday"))
+                .toLocalDateTime().toLocalDate();
+        return User.builder()
+                .id(id)
+                .name(name)
+                .login(login)
+                .email(email)
+                .birthday(birthday)
+                .build();
+    }
+
+    private User mapRowToUser(ResultSet rs, long rowNum) throws SQLException {
+        return User.builder()
+                .id(rs.getInt("user_id"))
+                .login(rs.getString("login"))
+                .name(rs.getString("user_name"))
+                .email(rs.getString("email"))
+                .birthday(rs.getDate("birthday").toLocalDate())
+                .build();
     }
 }
