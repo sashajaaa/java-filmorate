@@ -42,6 +42,8 @@ public class FilmDbStorage implements FilmStorage {
     private String requestFilmIdByYear;
     @Value("${film.requestForContainsFilm}")
     private String requestForFilmId;
+    @Value("${film.requestForSearchAll}")
+    private String requestForSearchAll;
     @Value("${film.requestForSearchInTitle}")
     private String requestForSearchInTitle;
     @Value("${film.requestForSearchInDirector}")
@@ -80,7 +82,6 @@ public class FilmDbStorage implements FilmStorage {
         addGenre((Integer) keys.get("film_id"), film.getGenres());
         addDirectors((Integer) keys.get("film_id"), film.getDirectors());
         Film newFilm = getById((Integer) keys.get("film_id"));
-        System.out.println(newFilm);
         return newFilm;
     }
 
@@ -154,6 +155,42 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public boolean containsFilm(int id) {
         return jdbcTemplate.queryForRowSet(requestForFilmId, id).next();
+    }
+
+    @Override
+    public List<Film> search(String lookFor, int choose) {
+        String query = "%" + lookFor.toLowerCase() + "%";
+        SqlRowSet rs;
+        switch (choose) {
+            case 0:
+                rs = jdbcTemplate.queryForRowSet(requestForSearchAll);
+                break;
+            case 2:
+                rs = jdbcTemplate.queryForRowSet(requestForSearchInDirector, query);
+                break;
+            case 3:
+                rs = jdbcTemplate.queryForRowSet(requestForSearchInDirectorAndTitle, query, query);
+                break;
+            default:
+                rs = jdbcTemplate.queryForRowSet(requestForSearchInTitle, query);
+                break;
+        }
+        List<Film> films = new LinkedList<>();
+        while (rs.next()) {
+            int filmId = rs.getInt("film_id");
+            Film film = Film.builder()
+                    .id(filmId)
+                    .name(rs.getString("film_name"))
+                    .releaseDate(rs.getDate("release_date").toLocalDate())
+                    .description(rs.getString("description"))
+                    .duration(rs.getInt("duration"))
+                    .mpa(new RatingMpa(rs.getInt("rating_id"), rs.getString("rating_name")))
+                    .build();
+            film.setGenres(getGenres(filmId));
+            film.setDirectors(getDirectors(filmId));
+            films.add(film);
+        }
+        return films;
     }
 
     public void addLike(int filmId, int userId) {

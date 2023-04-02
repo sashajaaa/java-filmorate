@@ -22,5 +22,7 @@ public interface FilmStorage extends LikesStorage {
 
     List<Film> getDirectorsFilms(int directorId, String sortBy);
 
+    List<Film> search(String lookFor, int choose);
+
     boolean containsFilm(int id);
 }

@@ -38,6 +38,7 @@ public class FilmService {
 
     public List<Film> getDirectorsFilmsSortedBy(int directorId, String sortBy) {
         containsDirector(directorId);
+        log.info("Director`s {} films list sorted by request {}", directorId, sortBy);
         return filmStorage.getDirectorsFilms(directorId, sortBy);
     }
 
@@ -86,7 +87,7 @@ public class FilmService {
         userLikes.add(filmId);
         user.setLikes(userLikes);
         userStorage.update(user);
-        log.info("Like successfully added");
+        log.info("Like from user with id=" + userId + " to film with id=" + filmId + " successfully added");
     }
 
     public void removeLike(Integer filmId, Integer userId) {
@@ -107,6 +108,27 @@ public class FilmService {
             throw new NotFoundException("Movie with ID = " + id + " not found");
         }
     }
+
+    public List<Film> search(String lookFor, String choose) {
+        log.info("Request for get films by substring {}", lookFor);
+        int chooseId;
+        if (choose.contains("director")) {
+            if (choose.contains("title")) {
+                chooseId = 3;
+            } else {
+                chooseId = 2;
+            }
+        } else {
+            chooseId = 1;
+        }
+        if (lookFor.isEmpty()) {
+            chooseId = 0;
+        }
+        return filmStorage.search(lookFor, chooseId);
+    }
+
+
+
 
     private void containsUser(int id) {
         if (!userStorage.containsUser(id)) {

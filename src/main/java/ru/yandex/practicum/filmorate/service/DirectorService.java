@@ -20,29 +20,35 @@ public class DirectorService {
     }
 
     public Director addDirector(Director director) {
+        log.info("Director added: " + director);
         return directorStorage.addDirector(director);
     }
 
     public Director updateDirector(Director director) {
         containsDirector(director.getId());
+        log.info("Director updated: " + director);
         return directorStorage.updateDirector(director);
     }
 
     public Director deleteDirectorById(Integer id) {
         containsDirector(id);
+        log.info("Director deleted with id=" + id);
         return directorStorage.deleteDirectorById(id);
     }
 
     public void deleteAllDirectors() {
+        log.info("Directors deleted");
         directorStorage.deleteAllDirectors();
     }
 
     public Director getDirectorById(Integer id) {
         containsDirector(id);
+        log.info("Director requested with id=" + id);
         return directorStorage.getDirectorById(id);
     }
 
     public List<Director> getAllDirectors() {
+        log.info("Directors requested");
         return directorStorage.getAllDirectors();
     }
 
