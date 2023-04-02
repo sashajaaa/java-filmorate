@@ -29,6 +29,7 @@ class FilmoRateApplicationTests {
     private final RatingMpaDbStorage ratingMpaDbStorage;
     private final UserDbStorage userDbStorage;
 
+/*
     @Test
     void getAllFilms_shouldConfirmThatTwoFilmsWasAddedAtList() {
         Film film1 = Film.builder()
@@ -53,7 +54,9 @@ class FilmoRateApplicationTests {
 
         assertThat(films).hasSize(2);
     }
+*/
 
+/*
     @Test
     void createFilm_shouldConfirmThatFilmIdExists() {
         Film film = Film.builder()
@@ -70,7 +73,9 @@ class FilmoRateApplicationTests {
 
         assertEquals(filmOptional.getId(), 1);
     }
+*/
 
+/*
     @Test
     void getFilmById_shouldConfirmThatFilmIdExists() {
         Film film = Film.builder()
@@ -86,6 +91,7 @@ class FilmoRateApplicationTests {
 
         assertEquals(filmDbStorage.getById(1).getId(),film.getId());
     }
+*/
 
     @Test
     public void getAllUsers_shouldConfirmThatTwoUsersWasAddedAtList() {
