@@ -1,12 +1,20 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.time.LocalDate;
@@ -17,11 +25,15 @@ import java.util.List;
 @Service
 @Slf4j
 public class UserService {
+
     private final UserStorage storage;
 
+    private final FilmStorage filmStorage;
+
     @Autowired
-    public UserService(UserStorage storage) {
+    public UserService(UserStorage storage, FilmStorage filmStorage) {
         this.storage = storage;
+        this.filmStorage = filmStorage;
     }
 
     public Collection<User> getAll() {
@@ -83,6 +95,42 @@ public class UserService {
         List<User> result = storage.getCommonFriends(user1Id, user2Id);
         log.info("Common friends of users with ID " + " {} and {} {} ", user1Id, user2Id, result);
         return result;
+    }
+
+    public List<Film> getRecommendations(int userId) {
+        if (storage.getById(userId) == null) {
+            throw new NotFoundException("User with ID = " + userId + " not found");
+        }
+        List<Film> recommendations = new ArrayList<>();
+        Set<Integer> userLikes = storage.getById(userId).getLikes();
+        if (userLikes.isEmpty()) {
+            return recommendations;
+        }
+        List<Integer> usersLikesSameFilms = new ArrayList<>();
+        for (Integer filmId : userLikes) {
+            usersLikesSameFilms.addAll(filmStorage.getById(filmId).getLikes());
+        }
+        Map<Integer, Long> repetitions = usersLikesSameFilms.stream()
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        repetitions.remove(userId);
+        if (repetitions.isEmpty()) {
+            return recommendations;
+        }
+        Optional<Integer> idUserWithSameLikes = repetitions.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey);
+        User userForGetRecommendations = storage.getById(idUserWithSameLikes.get());
+        List<Integer> idsRecommendedMovies = new ArrayList<>();
+        idsRecommendedMovies.addAll(userForGetRecommendations.getLikes());
+        for (Integer filmId : idsRecommendedMovies) {
+            if (!userLikes.contains(filmId)) {
+                recommendations.add(filmStorage.getById(filmId));
+            }
+        }
+        log.info("For user {} recommended {} films from user {}.", userId, recommendations.size(),
+                idUserWithSameLikes.get());
+
+        return recommendations;
     }
 
     private void checkUser(Integer userId, Integer friendId) {

@@ -1,11 +1,14 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.util.HashSet;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
@@ -18,9 +21,11 @@ import java.util.List;
 @Slf4j
 @Service
 public class FilmService {
+
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
-    private static final LocalDate LIMIT_DATE = LocalDate.from(LocalDateTime.of(1895, 12, 28, 0, 0));
+    private static final LocalDate LIMIT_DATE = LocalDate.from(
+            LocalDateTime.of(1895, 12, 28, 0, 0));
     private static final int LIMIT_LENGTH_OF_DESCRIPTION = 200;
 
     @Autowired
@@ -67,16 +72,22 @@ public class FilmService {
 
     public void addLike(Integer filmId, Integer userId) {
         Film film = filmStorage.getById(filmId);
-        if (film != null) {
-            if (userStorage.getById(userId) != null) {
-                filmStorage.addLike(filmId, userId);
-                log.info("Like successfully added");
-            } else {
-                throw new NotFoundException("User with ID = " + userId + " not found");
-            }
-        } else {
+        if (film == null) {
             throw new NotFoundException("Movie with ID = " + filmId + " not found");
         }
+        if (userStorage.getById(userId) == null) {
+            throw new NotFoundException("User with ID = " + userId + " not found");
+        }
+        filmStorage.addLike(filmId, userId);
+        User user = userStorage.getById(userId);
+        Set<Integer> userLikes = user.getLikes();
+        if (userLikes == null) {
+            userLikes = new HashSet<>(filmId);
+        }
+        userLikes.add(filmId);
+        user.setLikes(userLikes);
+        userStorage.update(user);
+        log.info("Like successfully added");
     }
 
     public void removeLike(Integer filmId, Integer userId) {
@@ -100,7 +111,8 @@ public class FilmService {
     }
 
     protected void validate(Film film, String message) {
-        if (film.getDescription().length() > LIMIT_LENGTH_OF_DESCRIPTION || film.getReleaseDate().isBefore(LIMIT_DATE)) {
+        if (film.getDescription().length() > LIMIT_LENGTH_OF_DESCRIPTION || film.getReleaseDate()
+                .isBefore(LIMIT_DATE)) {
             log.debug(message);
             throw new ValidationException(message);
         }

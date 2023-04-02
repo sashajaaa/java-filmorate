@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +21,7 @@ class UserTest {
 
     @Test
     void createUserWithBadEmail_shouldShowErrorMessage() {
-        User user = new User(10, "sashajaaa.ru", "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35));
+        User user = new User(10, "sashajaaa.ru", "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35), new HashSet<>());
         ResponseEntity<User> response = restTemplate.postForEntity("/users", user, User.class);
 
         assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
@@ -28,7 +29,7 @@ class UserTest {
 
     @Test
     void createUserWithEmptyLogin_shouldShowErrorMessage() {
-        User user = new User(10, "sashajaaa@yandex.ru", " ", "Aleksandr", LocalDate.now().minusYears(35));
+        User user = new User(10, "sashajaaa@yandex.ru", " ", "Aleksandr", LocalDate.now().minusYears(35), new HashSet<>());
         ResponseEntity<User> response = restTemplate.postForEntity("/users", user, User.class);
 
         assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
@@ -36,7 +37,7 @@ class UserTest {
 
     @Test
     void createFutureBirthUser_shouldShowErrorMessage() {
-        User user = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().plusYears(35));
+        User user = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().plusYears(35), new HashSet<>());
         ResponseEntity<User> response = restTemplate.postForEntity("/users", user, User.class);
 
         assertEquals("400 BAD_REQUEST", response.getStatusCode().toString());
@@ -44,10 +45,10 @@ class UserTest {
 
     @Test
     void updateUserToEmptyEmail_shouldShowErrorMessage() {
-        User usr = new User(1, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35));
+        User usr = new User(1, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35), new HashSet<>());
         ResponseEntity<User> response = restTemplate.postForEntity("/users", usr, User.class);
 
-        User user2 = new User(1, null, "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35));
+        User user2 = new User(1, null, "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35), new HashSet<>());
         HttpEntity<User> entity = new HttpEntity<>(user2);
         ResponseEntity<User> response2 = restTemplate.exchange("/users", HttpMethod.PUT, entity, User.class);
 
@@ -56,9 +57,9 @@ class UserTest {
 
     @Test
     void updateUserToEmptyLogin_shouldShowErrorMessage() {
-        User usr = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35));
+        User usr = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35), new HashSet<>());
         ResponseEntity<User> response = restTemplate.postForEntity("/users", usr, User.class);
-        User user = new User(10, "sashajaaa@yandex.ru", " ", "Aleksandr", LocalDate.now().minusYears(35));
+        User user = new User(10, "sashajaaa@yandex.ru", " ", "Aleksandr", LocalDate.now().minusYears(35), new HashSet<>());
         HttpEntity<User> entity = new HttpEntity<>(user);
         ResponseEntity<User> response2 = restTemplate.exchange("/users", HttpMethod.PUT, entity, User.class);
 
@@ -67,9 +68,9 @@ class UserTest {
 
     @Test
     void updateFutureBirthUser_shouldShowErrorMessage() {
-        User usr = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35));
+        User usr = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().minusYears(35), new HashSet<>());
         ResponseEntity<User> response = restTemplate.postForEntity("/users", usr, User.class);
-        User user = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().plusYears(35));
+        User user = new User(10, "sashajaaa@yandex.ru", "sashajaaa", "Aleksandr", LocalDate.now().plusYears(35), new HashSet<>());
         HttpEntity<User> entity = new HttpEntity<>(user);
         ResponseEntity<User> response2 = restTemplate.exchange("/users", HttpMethod.PUT, entity, User.class);
 
