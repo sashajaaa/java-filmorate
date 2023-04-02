@@ -7,7 +7,6 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistsException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
@@ -48,7 +47,6 @@ public class DirectorDbStorage implements DirectorStorage {
         if (idRow.next()) {
             director.setId(idRow.getInt("director_id"));
         }
-        log.info("Director {} is added", director);
         return director;
     }
 
@@ -60,31 +58,18 @@ public class DirectorDbStorage implements DirectorStorage {
             Integer id = idsRow.getInt("director_id");
             directors.add(getDirectorById(id));
         }
-        log.info("List of directors is returned");
         return directors;
     }
 
     @Override
     public Director getDirectorById(Integer id) {
-
         SqlRowSet directorRow = getDirectorRowByID(id);
-        if (!directorRow.next()) {
-            throw new NotFoundException("Unable to return director: director is not found");
-        }
         Director director = buildDirectorFromRow(directorRow);
-        log.info("Director is returned {}", director);
         return director;
     }
 
     @Override
     public Director updateDirector(Director director) {
-
-        if (!isPresentInDB(director.getId())) {
-            throw new NotFoundException("Unable to update director: director is not found");
-        }
-        if (isPresentInDB(director)) {
-            throw new NotFoundException("Unable to update director: director is not found");
-        }
         Director bufferDirector = getDirectorById(director.getId());
         try {
             jdbcTemplate.update(requestUpdateDirector, director.getName(), director.getId());
@@ -93,17 +78,12 @@ public class DirectorDbStorage implements DirectorStorage {
             throw new RuntimeException("SQL exception");
         }
         Director updatedDirector = getDirectorById(director.getId());
-        log.info("Director is updated {}", updatedDirector);
         return updatedDirector;
     }
 
     @Override
     public Director deleteDirectorById(Integer id) {
-
         SqlRowSet directorRow = getDirectorRowByID(id);
-        if (!directorRow.next()) {
-            throw new NotFoundException("Unable to delete director: director is not found");
-        }
         Director removedDirector = Director.builder()
                 .id(directorRow.getInt("director_id"))
                 .name(directorRow.getString("director_name"))
@@ -112,7 +92,6 @@ public class DirectorDbStorage implements DirectorStorage {
         if (getAllDirectors().isEmpty()) {
             jdbcTemplate.execute(requestResetPK);
         }
-        log.info("Director is deleted {}", removedDirector);
         return removedDirector;
     }
 
@@ -123,7 +102,6 @@ public class DirectorDbStorage implements DirectorStorage {
             jdbcTemplate.execute(requestDeleteById + idsRow.getInt("director_id"));
         }
         jdbcTemplate.execute(requestResetPK);
-        log.info("Directors table is dropped");
     }
 
     @Override
