@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistsException;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.storage.interfaces.DirecorStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 @Slf4j
-public class DirectorDbStorage implements DirecorStorage {
+public class DirectorDbStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
 
     public DirectorDbStorage(JdbcTemplate jdbcTemplate) {
