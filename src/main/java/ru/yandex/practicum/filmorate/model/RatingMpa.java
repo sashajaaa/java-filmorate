@@ -18,7 +18,6 @@ import javax.validation.constraints.Positive;
 @ToString
 public class RatingMpa {
 
-    @Positive
     protected int id;
 
     @NotBlank

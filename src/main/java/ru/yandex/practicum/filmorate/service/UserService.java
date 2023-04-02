@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -21,7 +20,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Component
 @Service
 @Slf4j
 public class UserService {
@@ -119,8 +117,7 @@ public class UserService {
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey);
         User userForGetRecommendations = storage.getById(idUserWithSameLikes.get());
-        List<Integer> idsRecommendedMovies = new ArrayList<>();
-        idsRecommendedMovies.addAll(userForGetRecommendations.getLikes());
+        List<Integer> idsRecommendedMovies = new ArrayList<>(userForGetRecommendations.getLikes());
         for (Integer filmId : idsRecommendedMovies) {
             if (!userLikes.contains(filmId)) {
                 recommendations.add(filmStorage.getById(filmId));

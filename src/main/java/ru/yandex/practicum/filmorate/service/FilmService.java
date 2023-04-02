@@ -103,12 +103,6 @@ public class FilmService {
         return result;
     }
 
-    public void containsFilm(int id) {
-        if (!filmStorage.containsFilm(id)) {
-            throw new NotFoundException("Movie with ID = " + id + " not found");
-        }
-    }
-
     public List<Film> search(String lookFor, String choose) {
         log.info("Request for get films by substring {}", lookFor);
         int chooseId;
@@ -127,8 +121,11 @@ public class FilmService {
         return filmStorage.search(lookFor, chooseId);
     }
 
-
-
+    private void containsFilm(int id) {
+        if (!filmStorage.containsFilm(id)) {
+            throw new NotFoundException("Movie with ID = " + id + " not found");
+        }
+    }
 
     private void containsUser(int id) {
         if (!userStorage.containsUser(id)) {

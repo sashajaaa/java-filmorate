@@ -129,7 +129,7 @@ public class UserDbStorage implements UserStorage {
 
     public boolean isFriend(int userId, int friendId) {
         String sqlQuery = "SELECT * FROM friends WHERE "
-                + "user_id = ? AND friends_id = ?";
+                + "user_id = ? AND friend_id = ?";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
         return srs.next();
     }
@@ -137,8 +137,7 @@ public class UserDbStorage implements UserStorage {
     private Set<Integer> getLikes(int userId) {
         String sqlQuery = "SELECT film_id FROM likes WHERE user_id = ?";
         List<Integer> foundFilmLikes = jdbcTemplate.queryForList(sqlQuery, Integer.class, userId);
-        Set<Integer> likes = new HashSet<>(foundFilmLikes);
-        return likes;
+        return new HashSet<>(foundFilmLikes);
     }
 
     private User userMap(SqlRowSet srs) {

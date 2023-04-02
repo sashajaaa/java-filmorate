@@ -78,7 +78,6 @@ public class FilmController {
     @GetMapping("/search")
     public List<Film> search(@RequestParam String query,
                              @RequestParam(defaultValue = "title") String by) {
-        log.info("Request for get films by substring {}", query);
         return filmService.search(query, by);
     }
 }

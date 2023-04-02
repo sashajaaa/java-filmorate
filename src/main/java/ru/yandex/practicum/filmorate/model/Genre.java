@@ -20,7 +20,6 @@ import javax.validation.constraints.Positive;
 @ToString
 public class Genre {
 
-    @Positive
     protected int id;
 
     @NotBlank
