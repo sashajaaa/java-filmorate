@@ -250,6 +250,13 @@ public class FilmDbStorage implements FilmStorage {
         return new Genre(genreId, genreName);
     }
 
+    private Set<Integer> getLikes(int filmId) {
+        String sqlQuery = "SELECT user_id FROM likes WHERE film_id = ?";
+        List<Integer> foundFilmLikes = jdbcTemplate.queryForList(sqlQuery, Integer.class, filmId);
+        Set<Integer> likes = new HashSet<>(foundFilmLikes);
+        return likes;
+    }
+
     private Director makeDirector(ResultSet rs, int id) throws SQLException {
         Integer directorId = rs.getInt("director_id");
         String directorName = rs.getString("director_name");
@@ -291,6 +298,7 @@ public class FilmDbStorage implements FilmStorage {
         RatingMpa mpa = new RatingMpa(mpaId, mpaName);
         Set<Genre> genres = getGenres(id);
         Set<Director> directors = getDirectors(id);
+        Set<Integer> likes = getLikes(id);
         return Film.builder()
                 .id(id)
                 .name(name)
@@ -300,6 +308,7 @@ public class FilmDbStorage implements FilmStorage {
                 .genres(genres)
                 .releaseDate(releaseDate)
                 .directors(directors)
+                .likes(likes)
                 .build();
     }
 }
