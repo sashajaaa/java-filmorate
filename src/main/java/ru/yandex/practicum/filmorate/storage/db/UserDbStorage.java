@@ -130,12 +130,11 @@ public class UserDbStorage implements UserStorage {
     }
 
     private static User userMap(SqlRowSet srs) {
-        int id = srs.getInt("user_id");
-        System.out.println("-----------------id " + id);
-        String name = srs.getString("user_name");
-        String login = srs.getString("login");
-        String email = srs.getString("email");
-        LocalDate birthday = Objects.requireNonNull(srs.getTimestamp("birthday"))
+        int id = srs.getInt("USER_ID");
+        String name = srs.getString("USER_NAME");
+        String login = srs.getString("LOGIN");
+        String email = srs.getString("EMAIL");
+        LocalDate birthday = Objects.requireNonNull(srs.getTimestamp("BIRTHDAY"))
                 .toLocalDateTime().toLocalDate();
         return User.builder()
                 .id(id)
