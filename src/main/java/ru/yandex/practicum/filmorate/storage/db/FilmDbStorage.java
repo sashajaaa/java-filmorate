@@ -46,7 +46,6 @@ public class FilmDbStorage implements FilmStorage {
     @Value("${director.get-filmsId-sorted-by-year}")
     private String requestFilmIdByYear;
 
-
     @Override
     public Collection<Film> getAll() {
         SqlRowSet filmsIdRow = jdbcTemplate.queryForRowSet("SELECT film_id FROM films");
@@ -78,12 +77,6 @@ public class FilmDbStorage implements FilmStorage {
         return newFilm;
     }
 
-    /**
-     * Обновляет фильм, если возникнет ошибка при обновлении, восстановятся исходные данные
-     *
-     * @param film обновляемый фильм
-     * @return результат обновления
-     */
     @Override
     public Film update(Film film) {
         Film buffFilm = getById(film.getId());
@@ -131,25 +124,6 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    public void addGenre(int filmId, Set<Genre> genres) {
-        deleteAllGenresById(filmId);
-        if (genres == null || genres.isEmpty()) {
-            return;
-        }
-        String sqlQuery = "INSERT INTO film_genres (film_id, genre_id) "
-                + "VALUES (?, ?)";
-        List<Genre> genresTable = new ArrayList<>(genres);
-        this.jdbcTemplate.batchUpdate(sqlQuery, new BatchPreparedStatementSetter() {
-            public void setValues(PreparedStatement ps, int i) throws SQLException {
-                ps.setInt(1, filmId);
-                ps.setInt(2, genresTable.get(i).getId());
-            }
-            public int getBatchSize() {
-                return genresTable.size();
-            }
-        });
-    }
-
     @Override
     public List<Film> getDirectorsFilms(int directorId, String sortBy) {
         SqlRowSet filmIdRow;
@@ -168,56 +142,6 @@ public class FilmDbStorage implements FilmStorage {
         }
         log.info("Director's {} list of films{} sorted by {} is returned", directorId, films,sortBy);
         return films;
-    }
-
-    private void addDirectors(int filmId, Set<Director> directors) {
-
-        deleteAllDirectorsByFilmId(filmId);
-        if (directors == null || directors.isEmpty()) {
-            return;
-        }
-        List<Director> directorList = new ArrayList<>(directors);
-        jdbcTemplate.batchUpdate("INSERT INTO films_directors (film_id, director_id) VALUES(?,?)",
-                new BatchPreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setInt(1, filmId);
-                        ps.setInt(2, directorList.get(i).getId());
-                    }
-
-                    @Override
-                    public int getBatchSize() {
-                        return directorList.size();
-                    }
-                });
-    }
-
-    private Set<Genre> getGenres(int filmId) {
-        Set<Genre> genres = new TreeSet<>(Comparator.comparing(Genre::getId));
-        String sqlQuery = "SELECT film_genres.genre_id, genres.genre_name FROM film_genres "
-                + "JOIN genres ON genres.genre_id = film_genres.genre_id "
-                + "WHERE film_id = ? ORDER BY genre_id ASC";
-        genres.addAll(jdbcTemplate.query(sqlQuery, this::makeGenre, filmId));
-        return genres;
-    }
-
-    private Set<Director> getDirectors(int filmId) {
-        Set<Director> directors = new TreeSet<>(Comparator.comparingInt(Director::getId));
-        String sqlQuery = "SELECT films_directors.director_id, directors.director_name FROM films_directors "
-                + "JOIN directors ON directors.director_id = films_directors.director_id "
-                + "WHERE film_id = ? ORDER BY director_id ASC";
-        directors.addAll(jdbcTemplate.query(sqlQuery, this::makeDirector, filmId));
-        return directors;
-    }
-
-    private void deleteAllDirectorsByFilmId(int filmId) {
-        String sglQuery = "DELETE FROM films_directors WHERE film_id = ?";
-        jdbcTemplate.update(sglQuery, filmId);
-    }
-
-    private void deleteAllGenresById(int filmId) {
-        String sglQuery = "DELETE FROM film_genres WHERE film_id = ?";
-        jdbcTemplate.update(sglQuery, filmId);
     }
 
     public void addLike(int filmId, int userId) {
@@ -244,10 +168,73 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, this::makeFilm);
     }
 
-    private Genre makeGenre(ResultSet rs, int id) throws SQLException {
-        int genreId = rs.getInt("genre_id");
-        String genreName = rs.getString("genre_name");
-        return new Genre(genreId, genreName);
+    public void addGenre(int filmId, Set<Genre> genres) {
+        deleteAllGenresById(filmId);
+        if (genres == null || genres.isEmpty()) {
+            return;
+        }
+        String sqlQuery = "INSERT INTO film_genres (film_id, genre_id) "
+                + "VALUES (?, ?)";
+        List<Genre> genresTable = new ArrayList<>(genres);
+        this.jdbcTemplate.batchUpdate(sqlQuery, new BatchPreparedStatementSetter() {
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                ps.setInt(1, filmId);
+                ps.setInt(2, genresTable.get(i).getId());
+            }
+            public int getBatchSize() {
+                return genresTable.size();
+            }
+        });
+    }
+
+    private Set<Genre> getGenres(int filmId) {
+        Set<Genre> genres = new TreeSet<>(Comparator.comparing(Genre::getId));
+        String sqlQuery = "SELECT film_genres.genre_id, genres.genre_name FROM film_genres "
+                + "JOIN genres ON genres.genre_id = film_genres.genre_id "
+                + "WHERE film_id = ? ORDER BY genre_id ASC";
+        genres.addAll(jdbcTemplate.query(sqlQuery, this::makeGenre, filmId));
+        return genres;
+    }
+
+    private void deleteAllGenresById(int filmId) {
+        String sglQuery = "DELETE FROM film_genres WHERE film_id = ?";
+        jdbcTemplate.update(sglQuery, filmId);
+    }
+
+    private void addDirectors(int filmId, Set<Director> directors) {
+
+        deleteAllDirectorsByFilmId(filmId);
+        if (directors == null || directors.isEmpty()) {
+            return;
+        }
+        List<Director> directorList = new ArrayList<>(directors);
+        jdbcTemplate.batchUpdate("INSERT INTO films_directors (film_id, director_id) VALUES(?,?)",
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        ps.setInt(1, filmId);
+                        ps.setInt(2, directorList.get(i).getId());
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return directorList.size();
+                    }
+                });
+    }
+
+    private Set<Director> getDirectors(int filmId) {
+        Set<Director> directors = new TreeSet<>(Comparator.comparingInt(Director::getId));
+        String sqlQuery = "SELECT films_directors.director_id, directors.director_name FROM films_directors "
+                + "JOIN directors ON directors.director_id = films_directors.director_id "
+                + "WHERE film_id = ? ORDER BY director_id ASC";
+        directors.addAll(jdbcTemplate.query(sqlQuery, this::makeDirector, filmId));
+        return directors;
+    }
+
+    private void deleteAllDirectorsByFilmId(int filmId) {
+        String sglQuery = "DELETE FROM films_directors WHERE film_id = ?";
+        jdbcTemplate.update(sglQuery, filmId);
     }
 
     private Set<Integer> getLikes(int filmId) {
@@ -255,6 +242,12 @@ public class FilmDbStorage implements FilmStorage {
         List<Integer> foundFilmLikes = jdbcTemplate.queryForList(sqlQuery, Integer.class, filmId);
         Set<Integer> likes = new HashSet<>(foundFilmLikes);
         return likes;
+    }
+
+    private Genre makeGenre(ResultSet rs, int id) throws SQLException {
+        int genreId = rs.getInt("genre_id");
+        String genreName = rs.getString("genre_name");
+        return new Genre(genreId, genreName);
     }
 
     private Director makeDirector(ResultSet rs, int id) throws SQLException {

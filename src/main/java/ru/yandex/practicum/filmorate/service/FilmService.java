@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import java.util.HashSet;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,12 +14,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
 public class FilmService {
-
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
     private static final LocalDate LIMIT_DATE = LocalDate.from(
@@ -117,7 +116,7 @@ public class FilmService {
         return result;
     }
 
-    protected void validate(Film film, String message) {
+    private void validate(Film film, String message) {
         if (film.getDescription().length() > LIMIT_LENGTH_OF_DESCRIPTION || film.getReleaseDate()
                 .isBefore(LIMIT_DATE)) {
             log.debug(message);
