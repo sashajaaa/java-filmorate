@@ -203,7 +203,6 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void addDirectors(int filmId, Set<Director> directors) {
-
         deleteAllDirectorsByFilmId(filmId);
         if (directors == null || directors.isEmpty()) {
             return;
