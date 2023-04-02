@@ -1,0 +1,34 @@
+film:
+  requestForSearchInTitle:  "SELECT f.film_id, f.film_name, f.description, f.duration, f.release_date, f.rating_id,
+  r.rating_name, COUNT(L.USER_ID) AS liked    
+  FROM films f 
+  LEFT JOIN rating_mpa r ON f.rating_id = r.rating_id; 
+  LEFT JOIN likes l ON f.film_id = l.film_id 
+  WHERE f.film_name LIKE ? 
+  GROUP BY f.film_id 
+  ORDER BY liked;"
+  requestForSearchInDirector:  "SELECT f.film_id, f.film_name, f.description, f.duration, f.release_date, f.rating_id,
+  r.rating_name, COUNT(L.USER_ID) AS liked    
+  FROM films f 
+  LEFT JOIN rating_mpa r ON f.rating_id = r.rating_id; 
+  LEFT JOIN likes l      ON f.film_id = l.film_id 
+  WHERE f.film_id IN (SELECT fi.film_id, d.director_id, d.director_name 
+  FROM directors d 
+  LEFT JOIN film_directors fi ON fi.director_id = d.director_id 
+  WHERE d.director_name LIKE ?) 
+  GROUP BY f.film_id 
+  ORDER BY liked;"
+  requestForSearchInDirectorAndTitle:  "SELECT f.film_id, f.film_name, f.description, f.duration, f.release_date, f.rating_id,
+  r.rating_name, COUNT(L.USER_ID) AS liked    
+  FROM films f 
+  LEFT JOIN rating_mpa r ON f.rating_id = r.rating_id; 
+  LEFT JOIN likes l      ON f.film_id = l.film_id 
+  WHERE f.film_id IN (SELECT fi.film_id, d.director_id, d.director_name 
+  FROM directors d 
+  LEFT JOIN film_directors fi ON fi.director_id = d.director_id 
+  WHERE d.director_name LIKE ?) OR
+  f.film_name LIKE ? 
+  GROUP BY f.film_id 
+  ORDER BY liked;"
+  requestForContainsFilm: "SELECT film_id FROM films WHERE film_id=?"
+
