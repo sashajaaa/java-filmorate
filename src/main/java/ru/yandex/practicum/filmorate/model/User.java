@@ -19,16 +19,22 @@ import java.util.Set;
 public class User {
     @JsonIgnore
     private final Set<Integer> friendIds = new HashSet<>();
+
     private int id;
+
     @NotBlank
     @Email
     private String email;
+
     @NotBlank
     private String login;
+
     private String name;
+
     @PastOrPresent
     @NotNull
     private LocalDate birthday;
+
     private Set<Integer> likes;
 
     public void addFriend(Integer id) {

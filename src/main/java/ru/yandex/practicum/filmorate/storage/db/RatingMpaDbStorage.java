@@ -19,7 +19,10 @@ public class RatingMpaDbStorage {
     public RatingMpa getRatingMpaById(int ratingId) {
         String sqlQuery = "SELECT * FROM rating_mpa WHERE rating_id = ?";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, ratingId);
+        if (srs.next()) {
             return new RatingMpa(ratingId, srs.getString("rating_name"));
+        }
+        return null;
     }
 
     public List<RatingMpa> getRatingsMpa() {

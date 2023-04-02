@@ -109,7 +109,7 @@ public class DirectorDbStorage implements DirectorStorage {
                 .name(directorRow.getString("director_name"))
                 .build();
         jdbcTemplate.execute(requestDeleteById + id);
-        if (getAllDirectors().size() == 0) {
+        if (getAllDirectors().isEmpty()) {
             jdbcTemplate.execute(requestResetPK);
         }
         log.info("Director is deleted {}", removedDirector);
@@ -151,7 +151,6 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     private SqlRowSet getIdRowsFromDB(Director director) {
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(requestGetIdByDirector, director.getName());
-        return rows;
+        return jdbcTemplate.queryForRowSet(requestGetIdByDirector, director.getName());
     }
 }
