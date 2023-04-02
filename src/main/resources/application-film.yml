@@ -36,6 +36,6 @@ film:
   WHERE LOWER(d.director_name) LIKE ?) 
   OR LOWER(f.film_name) LIKE ? 
   GROUP BY f.film_id, l.user_id 
-  ORDER BY liked ;"
+  ORDER BY liked DESC;"
   requestForContainsFilm: "SELECT film_id FROM films WHERE film_id=?"
 
