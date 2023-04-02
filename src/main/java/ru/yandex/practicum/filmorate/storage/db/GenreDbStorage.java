@@ -19,7 +19,7 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public void deleteAllGenresById(int filmId) {
-        String sglQuery = "DELETE film_genres WHERE genre_id = ?";
+        String sglQuery = "DELETE FROM film_genres WHERE genre_id = ?";
         jdbcTemplate.update(sglQuery, filmId);
     }
 

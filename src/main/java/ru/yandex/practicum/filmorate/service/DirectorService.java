@@ -11,7 +11,6 @@ import java.util.List;
 @Service
 @Slf4j
 public class DirectorService {
-
     private final DirecorStorage direcorStorage;
 
     @Autowired
@@ -42,6 +41,4 @@ public class DirectorService {
     public List<Director> getAllDirectors() {
         return direcorStorage.getAllDirectors();
     }
-
-
 }

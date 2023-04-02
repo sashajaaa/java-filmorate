@@ -18,7 +18,6 @@ import java.util.List;
 @Component
 @Slf4j
 public class DirectorDbStorage implements DirecorStorage {
-
     private final JdbcTemplate jdbcTemplate;
 
     public DirectorDbStorage(JdbcTemplate jdbcTemplate) {
@@ -43,7 +42,6 @@ public class DirectorDbStorage implements DirecorStorage {
 
     @Override
     public Director addDirector(Director director) {
-
         if (isPresentInDB(director)) {
             throw new ObjectAlreadyExistsException("Unable to add director: director already exists");
         }
@@ -99,7 +97,6 @@ public class DirectorDbStorage implements DirecorStorage {
         Director updatedDirector = getDirectorById(director.getId());
         log.info("Director is updated {}", updatedDirector);
         return updatedDirector;
-
     }
 
     @Override
@@ -119,7 +116,6 @@ public class DirectorDbStorage implements DirecorStorage {
         }
         log.info("Director is deleted {}", removedDirector);
         return removedDirector;
-
     }
 
     @Override
@@ -131,7 +127,6 @@ public class DirectorDbStorage implements DirecorStorage {
         }
         jdbcTemplate.execute(requestResetPK);
         log.info("Directors table is dropped");
-
     }
 
     private Director buildDirectorFromRow(SqlRowSet row) {
