@@ -1,12 +1,12 @@
 film:
-  requestForSearchAll:  "SELECT f.film_id, f.film_name, f.description, f.duration, f.release_date, f.rating_id,
+  requestForSearchAll: "SELECT f.film_id, f.film_name, f.description, f.duration, f.release_date, f.rating_id,
   r.rating_name, COUNT(l.user_id) AS liked    
   FROM films f 
   LEFT JOIN rating_mpa r ON f.rating_id = r.rating_id 
   LEFT JOIN likes l ON f.film_id = l.film_id 
   GROUP BY f.film_id, l.user_id
   ORDER BY liked DESC;"
-  requestForSearchInTitle:  "SELECT f.film_id, f.film_name, f.description, f.duration, f.release_date, f.rating_id,
+  requestForSearchInTitle: "SELECT f.film_id, f.film_name, f.description, f.duration, f.release_date, f.rating_id,
   r.rating_name, COUNT(l.user_id) AS liked    
   FROM films f 
   LEFT JOIN rating_mpa r ON f.rating_id = r.rating_id 
@@ -14,7 +14,7 @@ film:
   WHERE LOWER(f.film_name) LIKE ? 
   GROUP BY f.film_id, l.user_id 
   ORDER BY liked DESC;"
-  requestForSearchInDirector:  "SELECT f.film_id, f.film_name, f.description, f.duration, f.release_date, f.rating_id,
+  requestForSearchInDirector: "SELECT f.film_id, f.film_name, f.description, f.duration, f.release_date, f.rating_id,
   r.rating_name, COUNT(l.user_id) AS liked    
   FROM films f 
   LEFT JOIN rating_mpa r ON f.rating_id = r.rating_id 
@@ -25,7 +25,7 @@ film:
   WHERE LOWER(d.director_name) LIKE ?) 
   GROUP BY f.film_id, l.user_id 
   ORDER BY liked DESC;"
-  requestForSearchInDirectorAndTitle:  "SELECT f.film_id, f.film_name, f.description, f.duration, f.release_date, f.rating_id,
+  requestForSearchInDirectorAndTitle: "SELECT f.film_id, f.film_name, f.description, f.duration, f.release_date, f.rating_id,
   r.rating_name, COUNT(l.user_id) AS liked    
   FROM films f 
   LEFT JOIN rating_mpa r ON f.rating_id = r.rating_id
@@ -33,8 +33,8 @@ film:
   WHERE f.film_id IN (SELECT fi.film_id 
   FROM directors d 
   LEFT JOIN films_directors fi ON fi.director_id = d.director_id 
-  WHERE LOWER(d.director_name) LIKE ?) OR
-  f.film_name LIKE ? 
+  WHERE LOWER(d.director_name) LIKE ?) 
+  OR LOWER(f.film_name) LIKE ? 
   GROUP BY f.film_id, l.user_id 
   ORDER BY liked ;"
   requestForContainsFilm: "SELECT film_id FROM films WHERE film_id=?"

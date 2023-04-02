@@ -145,8 +145,8 @@ public class UserDbStorage implements UserStorage {
         String name = srs.getString("user_name");
         String login = srs.getString("login");
         String email = srs.getString("email");
-        LocalDate birthday = Objects.requireNonNull(srs.getTimestamp("birthday"))
-                .toLocalDateTime().toLocalDate();
+        LocalDate birthday = Objects.requireNonNull(srs.getDate("birthday"))
+                .toLocalDate();
         Set<Integer> likes = getLikes(id);
         return User.builder()
                 .id(id)
