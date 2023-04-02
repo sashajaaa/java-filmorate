@@ -7,6 +7,7 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistsException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
@@ -63,13 +64,24 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Director getDirectorById(Integer id) {
+
         SqlRowSet directorRow = getDirectorRowByID(id);
+        if (!directorRow.next()) {
+            throw new NotFoundException("Unable to return director: director is not found");
+        }
         Director director = buildDirectorFromRow(directorRow);
         return director;
     }
 
     @Override
     public Director updateDirector(Director director) {
+
+        if (!isPresentInDB(director.getId())) {
+            throw new NotFoundException("Unable to update director: director is not found");
+        }
+        if (isPresentInDB(director)) {
+            throw new NotFoundException("Unable to update director: director is not found");
+        }
         Director bufferDirector = getDirectorById(director.getId());
         try {
             jdbcTemplate.update(requestUpdateDirector, director.getName(), director.getId());
@@ -83,7 +95,11 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Director deleteDirectorById(Integer id) {
+
         SqlRowSet directorRow = getDirectorRowByID(id);
+        if (!directorRow.next()) {
+            throw new NotFoundException("Unable to delete director: director is not found");
+        }
         Director removedDirector = Director.builder()
                 .id(directorRow.getInt("director_id"))
                 .name(directorRow.getString("director_name"))
