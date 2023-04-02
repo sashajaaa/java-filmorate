@@ -186,6 +186,7 @@ public class FilmDbStorage implements FilmStorage {
                     .duration(rs.getInt("duration"))
                     .mpa(new RatingMpa(rs.getInt("rating_id"), rs.getString("rating_name")))
                     .build();
+            System.out.println("liked " + rs.getInt("liked"));
             film.setGenres(getGenres(filmId));
             film.setDirectors(getDirectors(filmId));
             films.add(film);
