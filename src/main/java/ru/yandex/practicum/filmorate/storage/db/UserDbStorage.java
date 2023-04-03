@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
-import java.util.HashSet;
-import java.util.Set;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -13,12 +11,15 @@ import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 @Repository
 public class UserDbStorage implements UserStorage {
+    private static final String GET_USER_ID = "SELECT user_id FROM users WHERE user_id=?";
     private final JdbcTemplate jdbcTemplate;
 
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
@@ -67,9 +68,10 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public String delete(int userId) {
-        String sqlQuery = "DELETE FROM users WHERE user_id = " + userId;
-        return sqlQuery;
+    public User delete(Integer userId) {
+        User user = getById(userId);
+        jdbcTemplate.execute("DELETE FROM users WHERE user_id = " + userId);
+        return user;
     }
 
     @Override
@@ -83,6 +85,11 @@ public class UserDbStorage implements UserStorage {
         }
     }
 
+    @Override
+    public boolean containsUser(int id) {
+        return jdbcTemplate.queryForRowSet(GET_USER_ID, id).next();
+    }
+
     public void addFriend(int userId, int friendId) {
         String sqlQuery = "INSERT INTO friends (user_id, friend_id, status) "
                 + "VALUES(?, ?, ?)";
@@ -90,7 +97,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     public void removeFriend(int userId, int friendId) {
-        String sqlQuery = "DELETE friends "
+        String sqlQuery = "DELETE FROM friends "
                 + "WHERE user_id = ? AND friend_id = ?";
         jdbcTemplate.update(sqlQuery, userId, friendId);
     }
@@ -98,7 +105,7 @@ public class UserDbStorage implements UserStorage {
     public List<User> getFriends(int userId) {
         List<User> friends = new ArrayList<>();
         String sqlQuery = "SELECT * FROM users "
-                + "WHERE users.user_id IN (SELECT friend_id from friends "
+                + "WHERE users.user_id IN (SELECT friend_id FROM friends "
                 + "WHERE user_id = ?)";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId);
         while (srs.next()) {
@@ -110,7 +117,7 @@ public class UserDbStorage implements UserStorage {
     public List<User> getCommonFriends(int friend1, int friend2) {
         List<User> commonFriends = new ArrayList<>();
         String sqlQuery = "SELECT * FROM users "
-                + "WHERE users.user_id IN (SELECT friend_id from friends "
+                + "WHERE users.user_id IN (SELECT friend_id FROM friends "
                 + "WHERE user_id IN (?, ?) "
                 + "AND friend_id NOT IN (?, ?))";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, friend1, friend2, friend1, friend2);
@@ -122,7 +129,7 @@ public class UserDbStorage implements UserStorage {
 
     public boolean isFriend(int userId, int friendId) {
         String sqlQuery = "SELECT * FROM friends WHERE "
-                + "user_id = ? AND friends_id = ?";
+                + "user_id = ? AND friend_id = ?";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
         return srs.next();
     }
@@ -130,8 +137,7 @@ public class UserDbStorage implements UserStorage {
     private Set<Integer> getLikes(int userId) {
         String sqlQuery = "SELECT film_id FROM likes WHERE user_id = ?";
         List<Integer> foundFilmLikes = jdbcTemplate.queryForList(sqlQuery, Integer.class, userId);
-        Set<Integer> likes = new HashSet<>(foundFilmLikes);
-        return likes;
+        return new HashSet<>(foundFilmLikes);
     }
 
     private User userMap(SqlRowSet srs) {
@@ -139,8 +145,8 @@ public class UserDbStorage implements UserStorage {
         String name = srs.getString("user_name");
         String login = srs.getString("login");
         String email = srs.getString("email");
-        LocalDate birthday = Objects.requireNonNull(srs.getTimestamp("birthday"))
-                .toLocalDateTime().toLocalDate();
+        LocalDate birthday = Objects.requireNonNull(srs.getDate("birthday"))
+                .toLocalDate();
         Set<Integer> likes = getLikes(id);
         return User.builder()
                 .id(id)

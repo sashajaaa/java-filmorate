@@ -8,18 +8,21 @@ import java.util.List;
 import java.util.Set;
 
 public interface FilmStorage extends LikesStorage {
-
     Collection<Film> getAll();
 
     Film create(Film film);
 
     Film update(Film film);
 
-    String delete(int id);
+    Film delete(Integer id);
 
     Film getById(Integer id);
 
     void addGenre(int filmId, Set<Genre> genres);
 
     List<Film> getDirectorsFilms(int directorId, String sortBy);
+
+    List<Film> search(String lookFor, int choose);
+
+    boolean containsFilm(int id);
 }

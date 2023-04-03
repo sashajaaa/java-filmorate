@@ -34,4 +34,8 @@ public class RatingMpaDbStorage {
         }
         return ratingsMpa;
     }
+
+    public boolean containsMpa(int id) {
+        return jdbcTemplate.queryForRowSet("SELECT * FROM rating_mpa WHERE rating_id = ?", id).next();
+    }
 }
