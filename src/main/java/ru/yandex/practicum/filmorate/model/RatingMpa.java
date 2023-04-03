@@ -8,7 +8,6 @@ import lombok.ToString;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 
 @Service
 @Getter
@@ -18,7 +17,6 @@ import javax.validation.constraints.Positive;
 @ToString
 public class RatingMpa {
 
-    @Positive
     protected int id;
 
     @NotBlank

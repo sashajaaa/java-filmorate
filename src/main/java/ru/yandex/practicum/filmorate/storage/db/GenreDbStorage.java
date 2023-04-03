@@ -43,4 +43,9 @@ public class GenreDbStorage implements GenreStorage {
         }
         return genres;
     }
+
+    @Override
+    public boolean containsGenre(int id) {
+        return jdbcTemplate.queryForRowSet("SELECT * FROM genres WHERE genre_id = ?", id).next();
+    }
 }

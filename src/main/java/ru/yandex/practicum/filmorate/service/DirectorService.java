@@ -3,42 +3,58 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.storage.interfaces.DirecorStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 
 import java.util.List;
 
 @Service
 @Slf4j
 public class DirectorService {
-    private final DirecorStorage direcorStorage;
+    private final DirectorStorage directorStorage;
 
     @Autowired
-    public DirectorService(DirecorStorage direcorStorage) {
-        this.direcorStorage = direcorStorage;
+    public DirectorService(DirectorStorage directorStorage) {
+        this.directorStorage = directorStorage;
     }
 
     public Director addDirector(Director director) {
-        return direcorStorage.addDirector(director);
+        log.info("Director added: " + director);
+        return directorStorage.addDirector(director);
     }
 
     public Director updateDirector(Director director) {
-        return direcorStorage.updateDirector(director);
+        containsDirector(director.getId());
+        log.info("Director updated: " + director);
+        return directorStorage.updateDirector(director);
     }
 
     public Director deleteDirectorById(Integer id) {
-        return direcorStorage.deleteDirectorById(id);
+        containsDirector(id);
+        log.info("Director deleted with id=" + id);
+        return directorStorage.deleteDirectorById(id);
     }
 
     public void deleteAllDirectors() {
-        direcorStorage.deleteAllDirectors();
+        log.info("Directors deleted");
+        directorStorage.deleteAllDirectors();
     }
 
     public Director getDirectorById(Integer id) {
-        return direcorStorage.getDirectorById(id);
+        containsDirector(id);
+        log.info("Director requested with id=" + id);
+        return directorStorage.getDirectorById(id);
     }
 
     public List<Director> getAllDirectors() {
-        return direcorStorage.getAllDirectors();
+        log.info("Directors requested");
+        return directorStorage.getAllDirectors();
+    }
+
+    public void containsDirector(int id) {
+        if (!directorStorage.containsDirector(id)) {
+            throw new NotFoundException("Director with id=" + id + " is absent");
+        }
     }
 }

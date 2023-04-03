@@ -17,6 +17,9 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 public class User {
+    @JsonIgnore
+    private final Set<Integer> friendIds = new HashSet<>();
+
     private int id;
 
     @NotBlank
@@ -33,9 +36,6 @@ public class User {
     private LocalDate birthday;
 
     private Set<Integer> likes;
-
-    @JsonIgnore
-    private final Set<Integer> friendIds = new HashSet<>();
 
     public void addFriend(Integer id) {
         friendIds.add(id);

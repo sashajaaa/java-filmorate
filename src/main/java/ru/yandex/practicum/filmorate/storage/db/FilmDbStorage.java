@@ -36,15 +36,24 @@ import java.util.TreeSet;
 @Repository
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Value("${director.get-filmsId-sorted-by-likes}")
     private String requestFilmIdByLikes;
     @Value("${director.get-filmsId-sorted-by-year}")
     private String requestFilmIdByYear;
+    @Value("${film.requestForContainsFilm}")
+    private String requestForFilmId;
+    @Value("${film.requestForSearchAll}")
+    private String requestForSearchAll;
+    @Value("${film.requestForSearchInTitle}")
+    private String requestForSearchInTitle;
+    @Value("${film.requestForSearchInDirector}")
+    private String requestForSearchInDirector;
+    @Value("${film.requestForSearchInDirectorAndTitle}")
+    private String requestForSearchInDirectorAndTitle;
+
+    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Collection<Film> getAll() {
@@ -73,7 +82,6 @@ public class FilmDbStorage implements FilmStorage {
         addGenre((Integer) keys.get("film_id"), film.getGenres());
         addDirectors((Integer) keys.get("film_id"), film.getDirectors());
         Film newFilm = getById((Integer) keys.get("film_id"));
-        System.out.println(newFilm);
         return newFilm;
     }
 
@@ -140,7 +148,49 @@ public class FilmDbStorage implements FilmStorage {
             log.info("Director's {} films are not found", directorId);
             throw new NotFoundException("Director's " + directorId + " films are not found");
         }
-        log.info("Director's {} list of films{} sorted by {} is returned", directorId, films,sortBy);
+        log.info("Director's {} list of films{} sorted by {} is returned", directorId, films, sortBy);
+        return films;
+    }
+
+    @Override
+    public boolean containsFilm(int id) {
+        return jdbcTemplate.queryForRowSet(requestForFilmId, id).next();
+    }
+
+    @Override
+    public List<Film> search(String lookFor, int choose) {
+        String query = "%" + lookFor.toLowerCase() + "%";
+        SqlRowSet rs;
+        switch (choose) {
+            case 0:
+                rs = jdbcTemplate.queryForRowSet(requestForSearchAll);
+                break;
+            case 2:
+                rs = jdbcTemplate.queryForRowSet(requestForSearchInDirector, query);
+                break;
+            case 3:
+                rs = jdbcTemplate.queryForRowSet(requestForSearchInDirectorAndTitle, query, query);
+                break;
+            default:
+                rs = jdbcTemplate.queryForRowSet(requestForSearchInTitle, query);
+                break;
+        }
+        List<Film> films = new LinkedList<>();
+        while (rs.next()) {
+            int filmId = rs.getInt("film_id");
+            Film film = Film.builder()
+                    .id(filmId)
+                    .name(rs.getString("film_name"))
+                    .releaseDate(rs.getDate("release_date").toLocalDate())
+                    .description(rs.getString("description"))
+                    .duration(rs.getInt("duration"))
+                    .mpa(new RatingMpa(rs.getInt("rating_id"), rs.getString("rating_name")))
+                    .build();
+            System.out.println("liked " + rs.getInt("liked"));
+            film.setGenres(getGenres(filmId));
+            film.setDirectors(getDirectors(filmId));
+            films.add(film);
+        }
         return films;
     }
 
@@ -261,7 +311,7 @@ public class FilmDbStorage implements FilmStorage {
         String name = rs.getString("film_name");
         String description = rs.getString("description");
         int duration = rs.getInt("duration");
-        LocalDate releaseDate = rs.getTimestamp("release_date").toLocalDateTime().toLocalDate();
+        LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
         int mpaId = rs.getInt("rating_id");
         String mpaName = rs.getString("rating_name");
         RatingMpa mpa = new RatingMpa(mpaId, mpaName);
@@ -284,8 +334,7 @@ public class FilmDbStorage implements FilmStorage {
         String name = srs.getString("film_name");
         String description = srs.getString("description");
         int duration = srs.getInt("duration");
-        LocalDate releaseDate = Objects.requireNonNull(srs.getTimestamp("release_date"))
-                .toLocalDateTime().toLocalDate();
+        LocalDate releaseDate = Objects.requireNonNull(srs.getDate("release_date")).toLocalDate();
         int mpaId = srs.getInt("rating_id");
         String mpaName = srs.getString("rating_name");
         RatingMpa mpa = new RatingMpa(mpaId, mpaName);

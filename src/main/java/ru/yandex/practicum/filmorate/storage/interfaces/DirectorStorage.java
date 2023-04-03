@@ -4,7 +4,7 @@ import ru.yandex.practicum.filmorate.model.Director;
 
 import java.util.List;
 
-public interface DirecorStorage {
+public interface DirectorStorage {
     Director addDirector(Director director);
 
     List<Director> getAllDirectors();
@@ -16,4 +16,6 @@ public interface DirecorStorage {
     Director deleteDirectorById(Integer id);
 
     void deleteAllDirectors();
+
+    boolean containsDirector(int id);
 }

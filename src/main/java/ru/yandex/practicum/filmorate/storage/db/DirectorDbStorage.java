@@ -10,20 +10,15 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistsException;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.storage.interfaces.DirecorStorage;
+import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 @Slf4j
-public class DirectorDbStorage implements DirecorStorage {
+public class DirectorDbStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    public DirectorDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Value("${director.get-id-by-director}")
     private String requestGetIdByDirector;
     @Value("${director.insert-director}")
@@ -39,6 +34,9 @@ public class DirectorDbStorage implements DirecorStorage {
     @Value("${director.update-director}")
     private String requestUpdateDirector;
 
+    public DirectorDbStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Director addDirector(Director director) {
@@ -50,7 +48,6 @@ public class DirectorDbStorage implements DirecorStorage {
         if (idRow.next()) {
             director.setId(idRow.getInt("director_id"));
         }
-        log.info("Director {} is added", director);
         return director;
     }
 
@@ -62,7 +59,6 @@ public class DirectorDbStorage implements DirecorStorage {
             Integer id = idsRow.getInt("director_id");
             directors.add(getDirectorById(id));
         }
-        log.info("List of directors is returned");
         return directors;
     }
 
@@ -74,7 +70,6 @@ public class DirectorDbStorage implements DirecorStorage {
             throw new NotFoundException("Unable to return director: director is not found");
         }
         Director director = buildDirectorFromRow(directorRow);
-        log.info("Director is returned {}", director);
         return director;
     }
 
@@ -95,7 +90,6 @@ public class DirectorDbStorage implements DirecorStorage {
             throw new RuntimeException("SQL exception");
         }
         Director updatedDirector = getDirectorById(director.getId());
-        log.info("Director is updated {}", updatedDirector);
         return updatedDirector;
     }
 
@@ -111,22 +105,24 @@ public class DirectorDbStorage implements DirecorStorage {
                 .name(directorRow.getString("director_name"))
                 .build();
         jdbcTemplate.execute(requestDeleteById + id);
-        if (getAllDirectors().size() == 0) {
+        if (getAllDirectors().isEmpty()) {
             jdbcTemplate.execute(requestResetPK);
         }
-        log.info("Director is deleted {}", removedDirector);
         return removedDirector;
     }
 
     @Override
     public void deleteAllDirectors() {
-
         SqlRowSet idsRow = jdbcTemplate.queryForRowSet(requestAllIDs);
         while (idsRow.next()) {
             jdbcTemplate.execute(requestDeleteById + idsRow.getInt("director_id"));
         }
         jdbcTemplate.execute(requestResetPK);
-        log.info("Directors table is dropped");
+    }
+
+    @Override
+    public boolean containsDirector(int id) {
+        return jdbcTemplate.queryForRowSet(requestGetDirectorById, id).next();
     }
 
     private Director buildDirectorFromRow(SqlRowSet row) {
@@ -149,7 +145,6 @@ public class DirectorDbStorage implements DirecorStorage {
     }
 
     private SqlRowSet getIdRowsFromDB(Director director) {
-        SqlRowSet rows = jdbcTemplate.queryForRowSet(requestGetIdByDirector, director.getName());
-        return rows;
+        return jdbcTemplate.queryForRowSet(requestGetIdByDirector, director.getName());
     }
 }
