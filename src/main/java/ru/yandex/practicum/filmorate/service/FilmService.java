@@ -121,6 +121,24 @@ public class FilmService {
         return filmStorage.search(lookFor, chooseId);
     }
 
+    public List<Film> getCommonMovies(Integer userId, Integer friendId) {
+        containsUser(userId);
+        containsUser(friendId);
+        Set<Integer> userLikes = userStorage.getById(userId).getLikes();
+        Set<Integer> friendLikes = userStorage.getById(friendId).getLikes();
+        List<Film> commonMovies = new ArrayList<>();
+        for (Integer filmId : userLikes) {
+            if (friendLikes.contains(filmId)) {
+                commonMovies.add(filmStorage.getById(filmId));
+            }
+        }
+        if (commonMovies.size() > 1) {
+            commonMovies.sort((o1, o2) -> o2.getLikes().size() - o1.getLikes().size());
+        }
+        log.info("Getting the common movies for users with id = " + userId + " and " + friendId);
+        return commonMovies;
+    }
+
     private void containsFilm(int id) {
         if (!filmStorage.containsFilm(id)) {
             throw new NotFoundException("Movie with ID = " + id + " not found");
@@ -145,26 +163,5 @@ public class FilmService {
             log.debug(message);
             throw new ValidationException(message);
         }
-    }
-
-    public List<Film> getCommonMovies(Integer userId, Integer friendId) {
-        if (userStorage.getById(userId) == null) {
-            throw new NotFoundException("User with ID = " + userId + " not found");
-        }
-        if (userStorage.getById(friendId) == null) {
-            throw new NotFoundException("User with ID = " + friendId + " not found");
-        }
-        Set<Integer> userLikes = userStorage.getById(userId).getLikes();
-        Set<Integer> friendLikes = userStorage.getById(friendId).getLikes();
-        List<Film> commonMovies = new ArrayList<>();
-        for (Integer filmId : userLikes) {
-            if (friendLikes.contains(filmId)) {
-                commonMovies.add(filmStorage.getById(filmId));
-            }
-        }
-        if (commonMovies.size() > 1) {
-            commonMovies.sort((o1, o2) -> o2.getLikes().size() - o1.getLikes().size());
-        }
-        return commonMovies;
     }
 }

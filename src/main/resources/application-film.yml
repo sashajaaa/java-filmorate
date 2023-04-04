@@ -42,4 +42,33 @@ film:
   GROUP BY f.film_id, l.user_id 
   ORDER BY liked DESC;"
   requestForContainsFilm: "SELECT film_id FROM films WHERE film_id=?"
-
+  requestForPopularMovies: "SELECT * FROM films 
+  LEFT JOIN likes ON likes.film_id = films.film_id 
+  JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id 
+  GROUP BY films.film_id 
+  ORDER BY COUNT (likes.film_id) DESC 
+  LIMIT ?;"
+  requestForPopularMoviesByGenre: "SELECT * FROM films 
+  LEFT JOIN likes ON likes.film_id = films.film_id 
+  JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id 
+  JOIN film_genres ON films.film_id = film_genres.film_id 
+  WHERE film_genres.genre_id = ? 
+  GROUP BY films.film_id 
+  ORDER BY COUNT (likes.film_id) DESC 
+  LIMIT ?;"
+  requestForPopularMoviesByGenreAndYear: "SELECT * FROM films 
+  LEFT JOIN likes ON likes.film_id = films.film_id 
+  JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id 
+  JOIN film_genres ON films.film_id = film_genres.film_id 
+  WHERE film_genres.genre_id = ? 
+  AND (EXTRACT(YEAR FROM CAST(films.release_date AS date))) = ? 
+  GROUP BY films.film_id 
+  ORDER BY COUNT (likes.film_id) DESC 
+  LIMIT ?;"
+  requestForPopularMoviesByYear: "SELECT * FROM films 
+  LEFT JOIN likes ON likes.film_id = films.film_id 
+  JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id 
+  WHERE (EXTRACT(YEAR FROM CAST(films.release_date AS date))) = ?
+  GROUP BY films.film_id 
+  ORDER BY COUNT (likes.film_id) DESC 
+  LIMIT ?;"
