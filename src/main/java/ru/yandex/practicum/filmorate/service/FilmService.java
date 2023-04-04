@@ -97,8 +97,8 @@ public class FilmService {
         log.info("Like successfully removed");
     }
 
-    public List<Film> getPopular(Integer count) {
-        List<Film> result = new ArrayList<>(filmStorage.getPopular(count));
+    public List<Film> getPopular(Integer count, Integer genreId, Integer year) {
+        List<Film> result = new ArrayList<>(filmStorage.getPopular(count, genreId, year));
         log.info("Requested a list of popular movies");
         return result;
     }
@@ -145,5 +145,26 @@ public class FilmService {
             log.debug(message);
             throw new ValidationException(message);
         }
+    }
+
+    public List<Film> getCommonMovies(Integer userId, Integer friendId) {
+        if (userStorage.getById(userId) == null) {
+            throw new NotFoundException("User with ID = " + userId + " not found");
+        }
+        if (userStorage.getById(friendId) == null) {
+            throw new NotFoundException("User with ID = " + friendId + " not found");
+        }
+        Set<Integer> userLikes = userStorage.getById(userId).getLikes();
+        Set<Integer> friendLikes = userStorage.getById(friendId).getLikes();
+        List<Film> commonMovies = new ArrayList<>();
+        for (Integer filmId : userLikes) {
+            if (friendLikes.contains(filmId)) {
+                commonMovies.add(filmStorage.getById(filmId));
+            }
+        }
+        if (commonMovies.size() > 1) {
+            commonMovies.sort((o1, o2) -> o2.getLikes().size() - o1.getLikes().size());
+        }
+        return commonMovies;
     }
 }
