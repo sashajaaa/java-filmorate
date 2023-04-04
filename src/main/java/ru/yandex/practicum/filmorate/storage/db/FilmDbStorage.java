@@ -52,6 +52,14 @@ public class FilmDbStorage implements FilmStorage {
     private String requestForSearchInDirector;
     @Value("${film.requestForSearchInDirectorAndTitle}")
     private String requestForSearchInDirectorAndTitle;
+    @Value("${film.requestForPopularMovies}")
+    private String requestForPopularMovies;
+    @Value("${film.requestForPopularMoviesByGenre}")
+    private String requestForPopularMoviesByGenre;
+    @Value("${film.requestForPopularMoviesByGenreAndYear}")
+    private String requestForPopularMoviesByGenreAndYear;
+    @Value("${film.requestForPopularMoviesByYear}")
+    private String requestForPopularMoviesByYear;
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -212,50 +220,16 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> getPopular(Integer count, Integer genreId, Integer year) {
         List<Film> popularMovies = new ArrayList<>();
         if (genreId == null && year == null) {
-            String sqlQuery = "SELECT * FROM films "
-                    + "LEFT JOIN likes ON likes.film_id = films.film_id "
-                    + "JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id "
-                    + "GROUP BY films.film_id "
-                    + "ORDER BY COUNT (likes.film_id) DESC "
-                    + "LIMIT "
-                    + count;
-            return popularMovies = jdbcTemplate.query(sqlQuery, this::makeFilm);
+            return popularMovies = jdbcTemplate.query(requestForPopularMovies, this::makeFilm, count);
         }
         if (genreId != null && year == null) {
-            String sqlQuery = "SELECT * FROM films "
-                    + "LEFT JOIN likes ON likes.film_id = films.film_id "
-                    + "JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id "
-                    + "JOIN film_genres ON films.film_id = film_genres.film_id "
-                    + "WHERE film_genres.genre_id = " + genreId + " "
-                    + "GROUP BY films.film_id "
-                    + "ORDER BY COUNT (likes.film_id) DESC "
-                    + "LIMIT "
-                    + count;
-            return popularMovies = jdbcTemplate.query(sqlQuery, this::makeFilm);
+            return popularMovies = jdbcTemplate.query(requestForPopularMoviesByGenre, this::makeFilm, genreId, count);
         }
         if (genreId != null && year != null) {
-            String sqlQuery = "SELECT * FROM films "
-                    + "LEFT JOIN likes ON likes.film_id = films.film_id "
-                    + "JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id "
-                    + "JOIN film_genres ON films.film_id = film_genres.film_id "
-                    + "WHERE film_genres.genre_id = " + genreId
-                    + " AND (EXTRACT(YEAR FROM CAST(films.release_date AS date))) = " + year
-                    + "GROUP BY films.film_id "
-                    + "ORDER BY COUNT (likes.film_id) DESC "
-                    + "LIMIT "
-                    + count;
-            return popularMovies = jdbcTemplate.query(sqlQuery, this::makeFilm);
+            return popularMovies = jdbcTemplate.query(requestForPopularMoviesByGenreAndYear, this::makeFilm, genreId, year, count);
         }
         if (genreId == null && year != null) {
-            String sqlQuery = "SELECT * FROM films "
-                    + "LEFT JOIN likes ON likes.film_id = films.film_id "
-                    + "JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id "
-                    + "WHERE (EXTRACT(YEAR FROM CAST(films.release_date AS date))) = " + year
-                    + "GROUP BY films.film_id "
-                    + "ORDER BY COUNT (likes.film_id) DESC "
-                    + "LIMIT "
-                    + count;
-            return popularMovies = jdbcTemplate.query(sqlQuery, this::makeFilm);
+            return popularMovies = jdbcTemplate.query(requestForPopularMoviesByYear, this::makeFilm, year, count);
         }
         return popularMovies;
     }
