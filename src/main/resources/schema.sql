@@ -60,3 +60,40 @@ CREATE TABLE IF NOT EXISTS films_directors (
     film_id INT NOT NULL REFERENCES films (film_id) ON DELETE CASCADE ON UPDATE CASCADE,
     director_id INT NOT NULL REFERENCES directors (director_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+CREATE TABLE reviews
+(
+    review_id   INTEGER PRIMARY KEY AUTO_INCREMENT,
+    content     VARCHAR(255) NOT NULL,
+    is_positive BOOLEAN      NOT NULL,
+    user_id     INTEGER      NOT NULL,
+    film_id     INTEGER      NOT NULL,
+    useful      INTEGER      NOT NULL
+);
+
+CREATE TABLE un_reviews_user_film
+(
+    user_id INTEGER,
+    film_id INTEGER,
+    PRIMARY KEY (user_id, film_id),
+    FOREIGN KEY (user_id) REFERENCES users (user_id),
+    FOREIGN KEY (film_id) REFERENCES films (film_id)
+);
+
+CREATE TABLE un_review_user
+(
+    review_id INTEGER,
+    user_id   INTEGER,
+    PRIMARY KEY (review_id, user_id),
+    FOREIGN KEY (review_id) REFERENCES reviews (review_id),
+    FOREIGN KEY (user_id) REFERENCES users (user_id)
+);
+
+CREATE TABLE un_review_film
+(
+    review_id INTEGER,
+    film_id   INTEGER,
+    PRIMARY KEY (review_id, film_id),
+    FOREIGN KEY (review_id) REFERENCES reviews (review_id),
+    FOREIGN KEY (film_id) REFERENCES films (film_id)
+);
