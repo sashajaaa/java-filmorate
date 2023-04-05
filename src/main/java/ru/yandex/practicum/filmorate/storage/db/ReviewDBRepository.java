@@ -128,8 +128,9 @@ public class ReviewDBRepository implements ReviewRepository<Integer, Review> {
 		return review;
 	}
 
-	public List<Review> load(Integer filmId, Integer count) { // TODO в разработке (не задано количество)
+	public List<Review> load(Integer filmId, Integer count) { // TODO в разработке
 		Map<Integer, Review> reviews = new HashMap<>();
+		
 		jdbcTemplate.query(reviewQuery.getSelectReviewByFilm(),
 				ps -> {
 					ps.setInt(1, filmId);
@@ -146,13 +147,14 @@ public class ReviewDBRepository implements ReviewRepository<Integer, Review> {
 						reviews.put(id, review);
 					}
 				});
-
 		return new ArrayList<>(reviews.values());
 	}
 
 	public List<Review> load(Integer count) {
 		Map<Integer, Review> reviews = new HashMap<>();
-		jdbcTemplate.query(reviewQuery.getSelectReviewCount(), ps -> ps.setInt(1, count),
+
+		jdbcTemplate.query(reviewQuery.getSelectReviewCount(),
+				ps -> ps.setInt(1, count),
 				rs -> {
 					while (rs.next()) {
 						int id = rs.getInt("review_id");
