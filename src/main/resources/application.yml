@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: Filmorate
   config:
     import: classpath:application-director.yml
   jackson:
