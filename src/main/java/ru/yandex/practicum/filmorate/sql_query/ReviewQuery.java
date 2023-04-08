@@ -12,7 +12,9 @@ public class ReviewQuery {
 	String selectReviewByFilm = "SELECT r.* FROM reviews r JOIN un_review_film urf ON urf.review_id =r.review_id WHERE urf.film_id =? ORDER BY r.useful DESC NULLS FIRST LIMIT ?";
 	String selectReviewCount = "SELECT * FROM reviews ORDER BY useful DESC NULLS FIRST LIMIT ?";
 
-	String updateReview = "UPDATE reviews SET content = ?, is_positive = ?, useful = ? WHERE review_id = ?";
+//	String updateReview = "UPDATE reviews SET content = ?, is_positive = ?, useful = ? WHERE review_id = ?";
+	String updateReview = "UPDATE reviews SET content = ?, is_positive = ? WHERE review_id = ?";
+	String updateReviewUseful = "UPDATE reviews SET is_positive = ?, useful = ? WHERE review_id = ?";
 	String insertIntoReview = "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) VALUES (?, ?, ? ,? ,?)";
 	String insertUniqIdForReviews = "INSERT INTO un_reviews_user_film (user_id, film_id) VALUES (?, ?)";
 	String insertUniqFilmReviews = "INSERT INTO un_review_film (review_id, film_id) VALUES (?, ?)";
@@ -22,8 +24,8 @@ public class ReviewQuery {
 	String removeRelationshipWithUser = "DELETE FROM un_review_user WHERE review_id = ? AND user_id = ?"; //not use
 	String removeFilmReview = "DELETE FROM un_review_film WHERE review_id = ? AND film_id = ?"; //not use
 
-	String like = "INSERT INTO un_user_likes_review (review_id, user_id) VALUES (?, ?)";
-	String dislike = "INSERT INTO un_user_dislikes_review (review_id, user_id) VALUES (?, ?)";
+	String insertLike = "INSERT INTO un_user_likes_review (review_id, user_id) VALUES (?, ?)";
+	String insertDislike = "INSERT INTO un_user_dislikes_review (review_id, user_id) VALUES (?, ?)";
 	String removeLike = "DELETE FROM un_user_likes_review (review_id, user_id) WHERE review_id = ? AND user_id = ?";
 	String removeDislike = "DELETE FROM un_user_dislikes_review (review_id, user_id) WHERE review_id = ? AND user_id = ?";
 	String countLikes = "SELECT COUNT(*) as likes_count FROM un_user_likes_review WHERE review_id = ?";

@@ -42,7 +42,6 @@ public class ReviewDBRepository implements InteractionReviewRepository<Integer, 
 	}
 
 	private Integer saveToDB(Review review) {
-		log.info("SAVE -- {}", review);
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 
 		jdbcTemplate.update(connection -> {
@@ -60,7 +59,6 @@ public class ReviewDBRepository implements InteractionReviewRepository<Integer, 
 		int id = requireNonNull(keyHolder.getKey()).intValue();
 
 		Review reviewId = review.withReviewId(id);
-		log.info("Review with ID - {}", reviewId);
 
 		insertToUniqIdReview(reviewId);
 		insertToUniqFilmReview(reviewId);
@@ -108,8 +106,8 @@ public class ReviewDBRepository implements InteractionReviewRepository<Integer, 
 				ps -> {
 					ps.setString(1, review.getContent());
 					ps.setBoolean(2, review.getIsPositive());
-					ps.setInt(3, review.getUseful());
-					ps.setInt(4, review.getReviewId());
+//					ps.setInt(3, review.getUseful());
+					ps.setInt(3, review.getReviewId());
 				});
 		return findById(review.getReviewId());
 	}
@@ -147,21 +145,21 @@ public class ReviewDBRepository implements InteractionReviewRepository<Integer, 
 		jdbcTemplate.query(reviewQuery.getSelectReviewCount(),
 				ps -> ps.setInt(1, count),
 				rs -> {
-						int id = rs.getInt("review_id");
-						reviews.computeIfAbsent(id, m -> collectReview(rs));
+					int id = rs.getInt("review_id");
+					reviews.computeIfAbsent(id, m -> collectReview(rs));
 				});
 		return new ArrayList<>(reviews.values());
 	}
 
 	@Override
 	public Review like(Integer to, Integer from) {
-		jdbcTemplate.update(reviewQuery.getLike(), to, from);
+		jdbcTemplate.update(reviewQuery.getInsertLike(), to, from);
 		return positiveDeterminant(to);
 	}
 
 	@Override
 	public Review dislike(Integer to, Integer from) {
-		jdbcTemplate.update(reviewQuery.getDislike(), to, from);
+		jdbcTemplate.update(reviewQuery.getInsertDislike(), to, from);
 		return positiveDeterminant(to);
 	}
 
@@ -188,6 +186,16 @@ public class ReviewDBRepository implements InteractionReviewRepository<Integer, 
 
 		int result = (likes != null && dislikes != null) ? likes - dislikes : 0;
 		Review review = findById(reviewId);
-		return update(review.withUseful(result).withIsPositive(result > 0));
+		return updateUseful(review.withUseful(result).withIsPositive(result > 0));
+	}
+
+	private Review updateUseful(Review review) {
+		jdbcTemplate.update(reviewQuery.getUpdateReviewUseful(),
+				ps -> {
+					ps.setBoolean(1, review.getIsPositive());
+					ps.setInt(2, review.getUseful());
+					ps.setInt(3, review.getReviewId());
+				});
+		return findById(review.getReviewId());
 	}
 }
