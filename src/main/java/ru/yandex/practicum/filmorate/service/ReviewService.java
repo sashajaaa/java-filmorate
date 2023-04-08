@@ -35,7 +35,7 @@ public class ReviewService {
 	}
 
 	public List<Review> loadReviewsByFilmId(Integer filmId, Integer count) {
-//		throwEntityNotFoundByFilmId(filmId);
+		throwFilmNotFoundException(filmId);
 
 		List<Review> reviews = (filmId < 0)
 				? repository.load(count)

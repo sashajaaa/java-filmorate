@@ -126,7 +126,7 @@ public class ReviewDBRepository implements InteractionReviewRepository<Integer, 
 
 	@Override
 	public List<Review> load(Integer filmId, Integer count) {
-		Map<Integer, Review> reviews = new HashMap<>();
+		Map<Integer, Review> reviews = new LinkedHashMap<>();
 
 		jdbcTemplate.query(reviewQuery.getSelectReviewByFilm(),
 				ps -> {
@@ -142,7 +142,7 @@ public class ReviewDBRepository implements InteractionReviewRepository<Integer, 
 
 	@Override
 	public List<Review> load(Integer count) {
-		Map<Integer, Review> reviews = new HashMap<>();
+		Map<Integer, Review> reviews = new LinkedHashMap<>();
 
 		jdbcTemplate.query(reviewQuery.getSelectReviewCount(),
 				ps -> ps.setInt(1, count),

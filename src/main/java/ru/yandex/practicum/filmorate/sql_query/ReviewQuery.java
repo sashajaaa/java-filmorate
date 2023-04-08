@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 @Value
 public class ReviewQuery {
 	String selectReviewById = "SELECT * FROM reviews WHERE review_id = ?";
-	String selectReview = "SELECT * FROM reviews";
+	String selectReviews = "SELECT * FROM reviews ORDER BY useful DESC NULLS FIRST";
 	String selectUniqIdFromReviews = "SELECT film_id FROM un_reviews_user_film WHERE user_id = ?";
 	String selectReviewByFilm = "SELECT r.* FROM reviews r JOIN un_review_film urf ON urf.review_id =r.review_id WHERE urf.film_id =? ORDER BY r.useful DESC NULLS FIRST LIMIT ?";
-	String selectReviewCount = "SELECT * FROM reviews ORDER BY useful ASC NULLS FIRST LIMIT ?";
+	String selectReviewCount = "SELECT * FROM reviews ORDER BY useful DESC NULLS FIRST LIMIT ?";
 
 	String updateReview = "UPDATE reviews SET content = ?, is_positive = ?, useful = ? WHERE review_id = ?";
 	String insertIntoReview = "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) VALUES (?, ?, ? ,? ,?)";
