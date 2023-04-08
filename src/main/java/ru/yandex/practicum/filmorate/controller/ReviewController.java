@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Review;
@@ -30,12 +31,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/reviews")
 @RequiredArgsConstructor
+@Slf4j
 public class ReviewController {
 
 	private final ReviewService reviewService;
 
 	@PostMapping
-	public ResponseEntity<Review> addNewReview(@Valid @RequestBody Review review) {
+	public ResponseEntity<Review> saveReview(@Valid @RequestBody Review review) {
 		return ResponseEntity.ok(reviewService.addReview(review));
 	}
 
@@ -63,7 +65,7 @@ public class ReviewController {
 	@PutMapping("/{id}/like/{userId}")
 	public ResponseEntity<Review> likeToReview(@PathVariable Integer id,
 											   @PathVariable Integer userId) {
-		return ResponseEntity.ok(reviewService.likeToReview(id, userId));
+		return ResponseEntity.ok(reviewService.userLikesReview(id, userId));
 	}
 
 	@PutMapping("/{id}/dislike/{userId}")

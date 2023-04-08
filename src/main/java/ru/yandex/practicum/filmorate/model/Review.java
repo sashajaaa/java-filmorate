@@ -22,11 +22,11 @@ public class Review {
 	Boolean isPositive;
 
 	@NotNull
-	@Positive
+//	@Positive
 	Integer userId;
 
 	@NotNull
-	@Positive
+//	@Positive
 	Integer filmId;
 
 	Integer useful;
