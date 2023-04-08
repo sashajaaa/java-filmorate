@@ -119,18 +119,6 @@ public class ReviewDBRepository implements InteractionReviewRepository<Integer, 
 		Review review = findById(id);
 
 		if (review != null) {
-			jdbcTemplate.update(reviewQuery.getRemoveRelationshipReview(), ps -> {
-				ps.setInt(1, review.getUserId());
-				ps.setInt(2, review.getFilmId());
-			});
-			jdbcTemplate.update(reviewQuery.getRemoveRelationshipWithUser(), ps -> {
-				ps.setInt(1, review.getReviewId());
-				ps.setInt(2, review.getUserId());
-			});
-			jdbcTemplate.update(reviewQuery.getRemoveFilmReview(), ps -> {
-				ps.setInt(1, review.getReviewId());
-				ps.setInt(2, review.getFilmId());
-			});
 			jdbcTemplate.update(reviewQuery.getRemoveReview(), id);
 		}
 		return review;

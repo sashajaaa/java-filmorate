@@ -16,10 +16,11 @@ public class ReviewQuery {
 	String insertIntoReview = "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) VALUES (?, ?, ? ,? ,?)";
 	String insertUniqIdForReviews = "INSERT INTO un_reviews_user_film (user_id, film_id) VALUES (?, ?)";
 	String insertUniqFilmReviews = "INSERT INTO un_review_film (review_id, film_id) VALUES (?, ?)";
+
 	String removeReview = "DELETE FROM reviews WHERE review_id = ?";
-	String removeRelationshipReview = "DELETE FROM un_reviews_user_film WHERE user_id = ? AND film_id = ?";
-	String removeRelationshipWithUser = "DELETE FROM un_review_user WHERE review_id = ? AND user_id = ?";
-	String removeFilmReview = "DELETE FROM un_review_film WHERE review_id = ? AND film_id = ?";
+	String removeRelationshipReview = "DELETE FROM un_reviews_user_film WHERE user_id = ? AND film_id = ?"; //not use
+	String removeRelationshipWithUser = "DELETE FROM un_review_user WHERE review_id = ? AND user_id = ?"; //not use
+	String removeFilmReview = "DELETE FROM un_review_film WHERE review_id = ? AND film_id = ?"; //not use
 
 	String like = "INSERT INTO un_user_likes_review (review_id, user_id) VALUES (?, ?)";
 	String dislike = "INSERT INTO un_user_dislikes_review (review_id, user_id) VALUES (?, ?)";

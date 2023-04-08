@@ -91,8 +91,8 @@ CREATE TABLE un_reviews_user_film
     user_id INTEGER,
     film_id INTEGER,
     PRIMARY KEY (user_id, film_id),
-    FOREIGN KEY (user_id) REFERENCES users (user_id),
-    FOREIGN KEY (film_id) REFERENCES films (film_id)
+    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE,
+    FOREIGN KEY (film_id) REFERENCES films (film_id) ON DELETE CASCADE
 );
 
 CREATE TABLE un_review_user
@@ -100,8 +100,8 @@ CREATE TABLE un_review_user
     review_id INTEGER,
     user_id   INTEGER,
     PRIMARY KEY (review_id, user_id),
-    FOREIGN KEY (review_id) REFERENCES reviews (review_id),
-    FOREIGN KEY (user_id) REFERENCES users (user_id)
+    FOREIGN KEY (review_id) REFERENCES reviews (review_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE un_review_film
@@ -109,8 +109,8 @@ CREATE TABLE un_review_film
     review_id INTEGER,
     film_id   INTEGER,
     PRIMARY KEY (review_id, film_id),
-    FOREIGN KEY (review_id) REFERENCES reviews (review_id),
-    FOREIGN KEY (film_id) REFERENCES films (film_id)
+    FOREIGN KEY (review_id) REFERENCES reviews (review_id) ON DELETE CASCADE,
+    FOREIGN KEY (film_id) REFERENCES films (film_id) ON DELETE CASCADE
 );
 
 CREATE TABLE un_user_likes_review
@@ -118,8 +118,8 @@ CREATE TABLE un_user_likes_review
     review_id INTEGER,
     user_id   INTEGER,
     PRIMARY KEY (review_id, user_id),
-    FOREIGN KEY (review_id) REFERENCES reviews (review_id),
-    FOREIGN KEY (user_id) REFERENCES users (user_id)
+    FOREIGN KEY (review_id) REFERENCES reviews (review_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE un_user_dislikes_review
@@ -127,6 +127,6 @@ CREATE TABLE un_user_dislikes_review
     review_id INTEGER,
     user_id   INTEGER,
     PRIMARY KEY (review_id, user_id),
-    FOREIGN KEY (review_id) REFERENCES reviews (review_id),
-    FOREIGN KEY (user_id) REFERENCES users (user_id)
+    FOREIGN KEY (review_id) REFERENCES reviews (review_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
 );
