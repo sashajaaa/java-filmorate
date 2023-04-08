@@ -1,33 +1,67 @@
 package ru.yandex.practicum.filmorate.sql_query;
 
-import lombok.Value;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-@Value
-public class ReviewQuery {
-	String selectReviewById = "SELECT * FROM reviews WHERE review_id = ?";
-	String selectReviews = "SELECT * FROM reviews ORDER BY useful DESC NULLS FIRST";
-	String selectUniqIdFromReviews = "SELECT film_id FROM un_reviews_user_film WHERE user_id = ?";
-	String selectReviewByFilm = "SELECT r.* FROM reviews r JOIN un_review_film urf ON urf.review_id =r.review_id WHERE urf.film_id =? ORDER BY r.useful DESC NULLS FIRST LIMIT ?";
-	String selectReviewCount = "SELECT * FROM reviews ORDER BY useful DESC NULLS FIRST LIMIT ?";
+@Getter
+public final class ReviewQuery {
+	@Value("${review.select-review-by-id}")
+	private String selectReviewById;
 
-//	String updateReview = "UPDATE reviews SET content = ?, is_positive = ?, useful = ? WHERE review_id = ?";
-	String updateReview = "UPDATE reviews SET content = ?, is_positive = ? WHERE review_id = ?";
-	String updateReviewUseful = "UPDATE reviews SET is_positive = ?, useful = ? WHERE review_id = ?";
-	String insertIntoReview = "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) VALUES (?, ?, ? ,? ,?)";
-	String insertUniqIdForReviews = "INSERT INTO un_reviews_user_film (user_id, film_id) VALUES (?, ?)";
-	String insertUniqFilmReviews = "INSERT INTO un_review_film (review_id, film_id) VALUES (?, ?)";
+	@Value("${review.select-reviews}")
+	private String selectReviews;
 
-	String removeReview = "DELETE FROM reviews WHERE review_id = ?";
-	String removeRelationshipReview = "DELETE FROM un_reviews_user_film WHERE user_id = ? AND film_id = ?"; //not use
-	String removeRelationshipWithUser = "DELETE FROM un_review_user WHERE review_id = ? AND user_id = ?"; //not use
-	String removeFilmReview = "DELETE FROM un_review_film WHERE review_id = ? AND film_id = ?"; //not use
+	@Value("${review.select-uniq-id-from-reviews}")
+	private String selectUniqIdFromReviews;
 
-	String insertLike = "INSERT INTO un_user_likes_review (review_id, user_id) VALUES (?, ?)";
-	String insertDislike = "INSERT INTO un_user_dislikes_review (review_id, user_id) VALUES (?, ?)";
-	String removeLike = "DELETE FROM un_user_likes_review (review_id, user_id) WHERE review_id = ? AND user_id = ?";
-	String removeDislike = "DELETE FROM un_user_dislikes_review (review_id, user_id) WHERE review_id = ? AND user_id = ?";
-	String countLikes = "SELECT COUNT(*) as likes_count FROM un_user_likes_review WHERE review_id = ?";
-	String countDislikes = "SELECT COUNT(*) as dislikes_count FROM un_user_dislikes_review WHERE review_id = ?";
+	@Value("${review.select-review-by-film}")
+	private String selectReviewByFilm;
+
+	@Value("${review.select-review-count}")
+	private String selectReviewCount;
+
+	@Value("${review.update-review}")
+	private String updateReview;
+
+	@Value("${review.update-review-useful}")
+	private String updateReviewUseful;
+
+	@Value("${review.insert-nto-review}")
+	private String insertIntoReview;
+
+	@Value("${review.insert-uniq-id-for-reviews}")
+	private String insertUniqIdForReviews;
+
+	@Value("${review.insert-uniq-film-reviews}")
+	private String insertUniqFilmReviews;
+
+	@Value("${review.remove-review}")
+	private String removeReview;
+
+	@Value("${review.remove-relationship-review}")
+	private String removeRelationshipReview; //not use
+	@Value("${review.remove-relationship-with-user}")
+	private String removeRelationshipWithUser; //not use
+	@Value("${review.remove-film-review}")
+	private String removeFilmReview; //not use
+
+	@Value("${review.insert-like}")
+	private String insertLike;
+
+	@Value("${review.insert-dislike}")
+	private String insertDislike;
+
+	@Value("${review.remove-like}")
+	private String removeLike;
+
+	@Value("${review.remove-dislike}")
+	private String removeDislike;
+
+	@Value("${review.count-likes}")
+	private String countLikes;
+
+	@Value("${review.count-dislikes}")
+	private String countDislikes;
 }

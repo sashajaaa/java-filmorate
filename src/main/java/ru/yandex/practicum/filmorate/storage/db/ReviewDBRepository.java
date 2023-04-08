@@ -106,7 +106,6 @@ public class ReviewDBRepository implements InteractionReviewRepository<Integer, 
 				ps -> {
 					ps.setString(1, review.getContent());
 					ps.setBoolean(2, review.getIsPositive());
-//					ps.setInt(3, review.getUseful());
 					ps.setInt(3, review.getReviewId());
 				});
 		return findById(review.getReviewId());
@@ -186,15 +185,14 @@ public class ReviewDBRepository implements InteractionReviewRepository<Integer, 
 
 		int result = (likes != null && dislikes != null) ? likes - dislikes : 0;
 		Review review = findById(reviewId);
-		return updateUseful(review.withUseful(result).withIsPositive(result > 0));
+		return updateUseful(review.withUseful(result));
 	}
 
 	private Review updateUseful(Review review) {
 		jdbcTemplate.update(reviewQuery.getUpdateReviewUseful(),
 				ps -> {
-					ps.setBoolean(1, review.getIsPositive());
-					ps.setInt(2, review.getUseful());
-					ps.setInt(3, review.getReviewId());
+					ps.setInt(1, review.getUseful());
+					ps.setInt(2, review.getReviewId());
 				});
 		return findById(review.getReviewId());
 	}
