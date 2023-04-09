@@ -5,7 +5,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.BuildException;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.storage.interfaces.FeedStorage;
 
 import java.sql.ResultSet;
@@ -19,7 +21,6 @@ import java.util.Optional;
 
 @Component
 public class FeedDbStorage implements FeedStorage {
-
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -35,10 +36,9 @@ public class FeedDbStorage implements FeedStorage {
     private String requestGetAllFeedOfUser;
 
     @Override
-    public Optional<Feed> addFeed(Long userId, Feed.EventType eventType, Feed.OperationType operation, Long entityId) {
+    public Optional<Feed> addFeed(Long userId, EventType eventType, OperationType operation, Long entityId) {
 
         Instant timeStamp = Instant.now();
-        System.out.println(timeStamp);
         jdbcTemplate.update(requestAddFeed,
                 timeStamp.toEpochMilli(),
                 entityId,
@@ -54,15 +54,12 @@ public class FeedDbStorage implements FeedStorage {
         Map<Long, Feed> feedMap = new LinkedHashMap<>();
 
         jdbcTemplate.query(requestGetAllFeedOfUser,
-                ps -> {
-                    ps.setLong(1, userId);
-                },
+                ps -> ps.setLong(1, userId),
                 rs -> {
                     Long id = rs.getLong("event_id");
                     feedMap.computeIfAbsent(id, m -> collectFeed(rs));
                 });
-        System.out.println(feedMap);
-        return new ArrayList<Feed>(feedMap.values());
+        return new ArrayList<>(feedMap.values());
     }
 
     private Feed collectFeed(ResultSet rs) {
@@ -73,8 +70,8 @@ public class FeedDbStorage implements FeedStorage {
                     .entityId(rs.getLong("entity_id"))
                     .eventId(rs.getLong("event_id"))
                     .userId(rs.getLong("user_id"))
-                    .eventType(Feed.EventType.valueOf(rs.getString("event_type_name")))
-                    .operation(Feed.OperationType.valueOf(rs.getString("operation_type_name")))
+                    .eventType(EventType.valueOf(rs.getString("event_type_name")))
+                    .operation(OperationType.valueOf(rs.getString("operation_type_name")))
                     .build();
         } catch (Exception e) {
             throw new BuildException("An error occurred while assembling the feed");
@@ -93,8 +90,8 @@ public class FeedDbStorage implements FeedStorage {
                     .entityId(rowSet.getLong("entity_id"))
                     .eventId(rowSet.getLong("event_id"))
                     .userId(rowSet.getLong("user_id"))
-                    .eventType(Feed.EventType.valueOf(rowSet.getString("event_type_name")))
-                    .operation(Feed.OperationType.valueOf(rowSet.getString("operation_type_name")))
+                    .eventType(EventType.valueOf(rowSet.getString("event_type_name")))
+                    .operation(OperationType.valueOf(rowSet.getString("operation_type_name")))
                     .build();
             return Optional.of(feed);
         }

@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -114,13 +113,13 @@ public class UserDbStorage implements UserStorage {
         return friends;
     }
 
-    public List<User> getCommonFriends(int friend1, int friend2) {
+    public List<User> getCommonFriends(int friendId, int otherFriendId) {
         List<User> commonFriends = new ArrayList<>();
         String sqlQuery = "SELECT * FROM users "
                 + "WHERE users.user_id IN (SELECT friend_id FROM friends "
                 + "WHERE user_id IN (?, ?) "
                 + "AND friend_id NOT IN (?, ?))";
-        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, friend1, friend2, friend1, friend2);
+        SqlRowSet srs = jdbcTemplate.queryForRowSet(sqlQuery, friendId, otherFriendId, friendId, otherFriendId);
         while (srs.next()) {
             commonFriends.add(userMap(srs));
         }
@@ -142,19 +141,13 @@ public class UserDbStorage implements UserStorage {
 
     private User userMap(SqlRowSet srs) {
         int id = srs.getInt("user_id");
-        String name = srs.getString("user_name");
-        String login = srs.getString("login");
-        String email = srs.getString("email");
-        LocalDate birthday = Objects.requireNonNull(srs.getDate("birthday"))
-                .toLocalDate();
-        Set<Integer> likes = getLikes(id);
         return User.builder()
                 .id(id)
-                .name(name)
-                .login(login)
-                .email(email)
-                .birthday(birthday)
-                .likes(likes)
+                .name(srs.getString("user_name"))
+                .login(srs.getString("login"))
+                .email(srs.getString("email"))
+                .birthday(Objects.requireNonNull(srs.getDate("birthday")).toLocalDate())
+                .likes(getLikes(id))
                 .build();
     }
 }

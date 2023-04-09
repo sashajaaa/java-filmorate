@@ -30,7 +30,7 @@ public class FilmService {
     private final DirectorStorage directorStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage, DirectorStorage directorStorage, FeedService feedService) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage, DirectorStorage directorStorage) {
         this.userStorage = userStorage;
         this.filmStorage = filmStorage;
         this.directorStorage = directorStorage;
@@ -95,7 +95,6 @@ public class FilmService {
         containsUser(userId);
         filmStorage.removeLike(filmId, userId);
         log.info("Like successfully removed");
-
     }
 
     public List<Film> getPopular(Integer count, Integer genreId, Integer year) {

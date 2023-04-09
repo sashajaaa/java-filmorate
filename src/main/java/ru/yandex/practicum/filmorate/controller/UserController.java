@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FeedService;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -63,13 +65,15 @@ public class UserController {
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.addFriend(id, friendId);
-        feedService.addFeed(Long.valueOf(id), Feed.EventType.FRIEND, Feed.OperationType.ADD, Long.valueOf(friendId));
+        feedService.addFeed(Long.valueOf(id), EventType.FRIEND,
+                OperationType.ADD, Long.valueOf(friendId));
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.removeFriend(id, friendId);
-        feedService.addFeed(Long.valueOf(id), Feed.EventType.FRIEND, Feed.OperationType.REMOVE, Long.valueOf(friendId));
+        feedService.addFeed(Long.valueOf(id), EventType.FRIEND,
+                OperationType.REMOVE, Long.valueOf(friendId));
     }
 
     @GetMapping("/{id}/friends")
@@ -92,5 +96,4 @@ public class UserController {
         log.info("User's {} feed is requested", id);
         return feedService.getAllFeedByUserId(id);
     }
-
 }

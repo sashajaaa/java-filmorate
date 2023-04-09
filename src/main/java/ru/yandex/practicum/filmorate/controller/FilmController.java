@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.service.FeedService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -67,22 +68,25 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.addLike(id, userId);
-        feedService.addFeed(Long.valueOf(userId), Feed.EventType.LIKE, Feed.OperationType.ADD, Long.valueOf(id));
+        feedService.addFeed(Long.valueOf(userId), EventType.LIKE, OperationType.ADD, Long.valueOf(id));
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.removeLike(id, userId);
-        feedService.addFeed(Long.valueOf(userId), Feed.EventType.LIKE, Feed.OperationType.REMOVE, Long.valueOf(id));
+        feedService.addFeed(Long.valueOf(userId), EventType.LIKE, OperationType.REMOVE, Long.valueOf(id));
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopular(@RequestParam(defaultValue = "10") Integer count, @RequestParam(required = false) Integer genreId, @RequestParam(required = false) Integer year) {
+    public List<Film> getPopular(@RequestParam(defaultValue = "10") Integer count,
+                                 @RequestParam(required = false) Integer genreId,
+                                 @RequestParam(required = false) Integer year) {
         return filmService.getPopular(count, genreId, year);
     }
 
     @GetMapping("/common")
-    public List<Film> getCommonMovies(@RequestParam Integer userId, @RequestParam Integer friendId) {
+    public List<Film> getCommonMovies(@RequestParam Integer userId,
+                                      @RequestParam Integer friendId) {
         return filmService.getCommonMovies(userId, friendId);
     }
 
