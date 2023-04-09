@@ -39,12 +39,12 @@ public class FeedDbStorage implements FeedStorage {
 
         Instant timeStamp = Instant.now();
         System.out.println(timeStamp);
-        jdbcTemplate.update(requestAddFeed
-                , timeStamp.toEpochMilli()
-                , entityId
-                , userId
-                , eventType.ordinal() + 1
-                , operation.ordinal() + 1
+        jdbcTemplate.update(requestAddFeed,
+                timeStamp.toEpochMilli(),
+                entityId,
+                userId,
+                eventType.ordinal() + 1,
+                operation.ordinal() + 1
         );
         return getFeedByTimeStamp(timeStamp);
     }
