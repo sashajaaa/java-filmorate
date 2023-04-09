@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -11,7 +10,12 @@ import ru.yandex.practicum.filmorate.storage.interfaces.FeedStorage;
 
 import java.sql.ResultSet;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 
 @Component
 public class FeedDbStorage implements FeedStorage {
