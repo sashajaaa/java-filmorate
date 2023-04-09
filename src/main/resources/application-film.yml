@@ -26,7 +26,7 @@ film:
   FROM directors d 
   LEFT JOIN films_directors fi ON fi.director_id = d.director_id 
   WHERE LOWER(d.director_name) LIKE ?) 
-  GROUP BY f.film_id, l.user_id 
+  GROUP BY f.film_id
   ORDER BY liked DESC;"
   requestForSearchInDirectorAndTitle: "SELECT f.film_id, f.film_name, 
   f.description, f.duration, f.release_date, f.rating_id,
@@ -39,16 +39,16 @@ film:
   LEFT JOIN films_directors fi ON fi.director_id = d.director_id 
   WHERE LOWER(d.director_name) LIKE ?) 
   OR LOWER(f.film_name) LIKE ? 
-  GROUP BY f.film_id, l.user_id 
+  GROUP BY f.film_id
   ORDER BY liked DESC;"
   requestForContainsFilm: "SELECT film_id FROM films WHERE film_id=?"
-  requestForPopularMovies: "SELECT * FROM films 
+  requestForPopularMovies: "SELECT films.*, rating_mpa.* FROM films 
   LEFT JOIN likes ON likes.film_id = films.film_id 
   JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id 
   GROUP BY films.film_id 
   ORDER BY COUNT (likes.film_id) DESC 
   LIMIT ?;"
-  requestForPopularMoviesByGenre: "SELECT * FROM films 
+  requestForPopularMoviesByGenre: "SELECT films.*, rating_mpa.*,film_genres.*  FROM films 
   LEFT JOIN likes ON likes.film_id = films.film_id 
   JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id 
   JOIN film_genres ON films.film_id = film_genres.film_id 
@@ -56,7 +56,7 @@ film:
   GROUP BY films.film_id 
   ORDER BY COUNT (likes.film_id) DESC 
   LIMIT ?;"
-  requestForPopularMoviesByGenreAndYear: "SELECT * FROM films 
+  requestForPopularMoviesByGenreAndYear: "SELECT films.*, rating_mpa.*,film_genres.* FROM films 
   LEFT JOIN likes ON likes.film_id = films.film_id 
   JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id 
   JOIN film_genres ON films.film_id = film_genres.film_id 
@@ -65,7 +65,7 @@ film:
   GROUP BY films.film_id 
   ORDER BY COUNT (likes.film_id) DESC 
   LIMIT ?;"
-  requestForPopularMoviesByYear: "SELECT * FROM films 
+  requestForPopularMoviesByYear: "SELECT films.*, rating_mpa.* FROM films 
   LEFT JOIN likes ON likes.film_id = films.film_id 
   JOIN rating_mpa ON films.rating_id = rating_mpa.rating_id 
   WHERE (EXTRACT(YEAR FROM CAST(films.release_date AS date))) = ?

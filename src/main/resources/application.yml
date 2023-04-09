@@ -1,3 +1,4 @@
+
 spring:
   application:
     name: Filmorate
@@ -5,6 +6,7 @@ spring:
     import:
       - classpath:application-director.yml
       - classpath:application-review.yml
+      - classpath:application-film.yml
   jackson:
     serialization:
       write-durations-as-timestamps: true
