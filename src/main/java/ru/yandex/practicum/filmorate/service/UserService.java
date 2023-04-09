@@ -27,7 +27,7 @@ public class UserService {
     private final FilmStorage filmStorage;
 
     @Autowired
-    public UserService(UserStorage storage, FilmStorage filmStorage) {
+    public UserService(UserStorage storage, FilmStorage filmStorage, FeedService feedService) {
         this.storage = storage;
         this.filmStorage = filmStorage;
     }
@@ -79,6 +79,7 @@ public class UserService {
         containsUser(friendId);
         storage.removeFriend(userId, friendId);
         log.info("Friend successfully removed");
+
     }
 
     public List<User> getAllFriends(Integer userId) {

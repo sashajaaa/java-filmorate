@@ -1,0 +1,10 @@
+feed:
+  addFeed: "INSERT INTO feed (event_timestamp,entity_id,user_id,event_type_id,operation_type_id) VALUES (?,?,?,?,?)"
+  find-by-timeStamp: "SELECT * FROM feed AS f
+   INNER JOIN event_type AS et ON et.event_type_id = f.event_type_id
+   INNER JOIN operation_type AS ot ON ot.operation_type_id = f.operation_type_id
+   Where event_timestamp = ?"
+  get-all-feed-of-user: "SELECT * FROM feed AS f
+  INNER JOIN event_type AS et ON et.event_type_id = f.event_type_id
+  INNER JOIN operation_type AS ot ON ot.operation_type_id = f.operation_type_id
+  Where user_id = ?"

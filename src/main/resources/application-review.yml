@@ -1,0 +1,25 @@
+review:
+  select-review-by-id: "SELECT * FROM reviews WHERE review_id = ?"
+  select-reviews: "SELECT * FROM reviews ORDER BY useful DESC NULLS FIRST"
+  select-uniq-id-from-reviews: "SELECT film_id FROM un_reviews_user_film WHERE user_id = ?"
+  select-review-by-film: "SELECT r.* FROM reviews r JOIN un_review_film urf ON urf.review_id =r.review_id WHERE urf.film_id =? ORDER BY r.useful DESC NULLS FIRST LIMIT ?"
+  select-review-count: "SELECT * FROM reviews ORDER BY useful DESC NULLS FIRST LIMIT ?"
+
+  update-review: "UPDATE reviews SET content = ?, is_positive = ? WHERE review_id = ?"
+  update-review-useful: "UPDATE reviews SET useful = ? WHERE review_id = ?"
+  insert-into-review: "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) VALUES (?, ?, ? ,? ,?)"
+  insert-uniq-id-for-reviews: "INSERT INTO un_reviews_user_film (user_id, film_id) VALUES (?, ?)"
+  insert-uniq-film-reviews: "INSERT INTO un_review_film (review_id, film_id) VALUES (?, ?)"
+  insert-uniq-user-reviews: "INSERT INTO un_review_user (review_id, user_id) VALUES (?, ?)"
+
+  remove-review: "DELETE FROM reviews WHERE review_id = ?"
+  remove-relationship-review: "DELETE FROM un_reviews_user_film WHERE user_id = ? AND film_id = ?"
+  remove-relationship-with-user: "DELETE FROM un_review_user WHERE review_id = ? AND user_id = ?"
+  remove-film-review: "DELETE FROM un_review_film WHERE review_id = ? AND film_id = ?"
+
+  insert-like: "INSERT INTO un_user_likes_review (review_id, user_id) VALUES (?, ?)"
+  insert-dislike: "INSERT INTO un_user_dislikes_review (review_id, user_id) VALUES (?, ?)"
+  remove-like: "DELETE FROM un_user_likes_review (review_id, user_id) WHERE review_id = ? AND user_id = ?"
+  remove-dislike: "DELETE FROM un_user_dislikes_review (review_id, user_id) WHERE review_id = ? AND user_id = ?"
+  count-likes: "SELECT COUNT(*) as likes_count FROM un_user_likes_review WHERE review_id = ?"
+  count-dislikes: "SELECT COUNT(*) as dislikes_count FROM un_user_dislikes_review WHERE review_id = ?"
