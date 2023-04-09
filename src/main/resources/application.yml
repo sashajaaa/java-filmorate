@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: Filmorate
+  config:
+    import:
+      - classpath:application-director.yml
+      - classpath:application-review.yml
+  jackson:
+    serialization:
+      write-durations-as-timestamps: true
+  sql:
+    init:
+      mode: always
+  h2:
+    console:
+      path: /h2-console
+      settings.trace: false
+      settings.web-allow-others: false
+      enabled: true
+  datasource:
+    url: jdbc:h2:file:./db/filmorate;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+    tomcat:
+      init-s-q-l: "SET DB_CLOSE_ON_EXIT FALSE"
+logging:
+  level:
+    ru.yandex.practicum: debug
