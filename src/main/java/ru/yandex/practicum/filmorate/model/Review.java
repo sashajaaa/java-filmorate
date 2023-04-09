@@ -6,7 +6,6 @@ import lombok.Value;
 import lombok.With;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 @Data
 @With
@@ -22,11 +21,9 @@ public class Review {
 	Boolean isPositive;
 
 	@NotNull
-//	@Positive
 	Integer userId;
 
 	@NotNull
-//	@Positive
 	Integer filmId;
 
 	Integer useful;

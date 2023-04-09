@@ -27,7 +27,7 @@ public class ReviewService {
 		return (review.getUseful() == null
 				? repository.unload(review.withUseful(0))
 				: repository.unload(review)).orElseThrow(
-						() -> new BuildException("Save Exception Review -> " + review));
+				() -> new BuildException("Save Exception Review -> " + review));
 	}
 
 	public Review findReviewById(Integer id) {
@@ -44,14 +44,15 @@ public class ReviewService {
 		return reviews.isEmpty() ? Collections.emptyList() : reviews;
 	}
 
-	public Review updateReview(Review review) { //TODO в разработке
+	public Review updateReview(Review review) {
+		throwReviewNotFoundException(review.getReviewId());
 		throwUserNotFoundException(review.getUserId());
 		throwFilmNotFoundException(review.getFilmId());
 
 		return repository.update(review);
 	}
 
-	public Review removeReviewById(Integer id) { //TODO в разработке
+	public Review removeReviewById(Integer id) {
 		return repository.remove(id);
 	}
 

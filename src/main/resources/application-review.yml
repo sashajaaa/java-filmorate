@@ -7,9 +7,10 @@ review:
 
   update-review: "UPDATE reviews SET content = ?, is_positive = ? WHERE review_id = ?"
   update-review-useful: "UPDATE reviews SET useful = ? WHERE review_id = ?"
-  insert-nto-review: "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) VALUES (?, ?, ? ,? ,?)"
+  insert-into-review: "INSERT INTO reviews (content, is_positive, user_id, film_id, useful) VALUES (?, ?, ? ,? ,?)"
   insert-uniq-id-for-reviews: "INSERT INTO un_reviews_user_film (user_id, film_id) VALUES (?, ?)"
   insert-uniq-film-reviews: "INSERT INTO un_review_film (review_id, film_id) VALUES (?, ?)"
+  insert-uniq-user-reviews: "INSERT INTO un_review_user (review_id, user_id) VALUES (?, ?)"
 
   remove-review: "DELETE FROM reviews WHERE review_id = ?"
   remove-relationship-review: "DELETE FROM un_reviews_user_film WHERE user_id = ? AND film_id = ?"

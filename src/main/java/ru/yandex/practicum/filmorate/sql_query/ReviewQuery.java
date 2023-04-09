@@ -28,7 +28,7 @@ public final class ReviewQuery {
 	@Value("${review.update-review-useful}")
 	private String updateReviewUseful;
 
-	@Value("${review.insert-nto-review}")
+	@Value("${review.insert-into-review}")
 	private String insertIntoReview;
 
 	@Value("${review.insert-uniq-id-for-reviews}")
@@ -36,6 +36,9 @@ public final class ReviewQuery {
 
 	@Value("${review.insert-uniq-film-reviews}")
 	private String insertUniqFilmReviews;
+
+	@Value("${review.insert-uniq-user-reviews}")
+	private String insertIntoUserReview;
 
 	@Value("${review.remove-review}")
 	private String removeReview;

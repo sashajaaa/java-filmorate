@@ -62,6 +62,8 @@ public class ReviewDBRepository implements InteractionReviewRepository<Integer, 
 
 		insertToUniqIdReview(reviewId);
 		insertToUniqFilmReview(reviewId);
+		insertToUniqUserReview(reviewId);
+
 		return id;
 	}
 
@@ -100,6 +102,12 @@ public class ReviewDBRepository implements InteractionReviewRepository<Integer, 
 				review.getFilmId());
 	}
 
+	private void insertToUniqUserReview(Review review) {
+		jdbcTemplate.update(reviewQuery.getInsertIntoUserReview(),
+				review.getReviewId(),
+				review.getUserId());
+	}
+
 	@Override
 	public Review update(Review review) {
 		jdbcTemplate.update(reviewQuery.getUpdateReview(),
@@ -117,6 +125,9 @@ public class ReviewDBRepository implements InteractionReviewRepository<Integer, 
 
 		if (review != null) {
 			jdbcTemplate.update(reviewQuery.getRemoveReview(), id);
+			jdbcTemplate.update(reviewQuery.getRemoveRelationshipReview(),
+					review.getUserId(),
+					review.getFilmId());
 		}
 		return review;
 	}
