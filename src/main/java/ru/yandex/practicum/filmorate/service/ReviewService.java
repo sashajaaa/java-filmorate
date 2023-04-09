@@ -39,7 +39,9 @@ public class ReviewService {
     }
 
     public List<Review> loadReviewsByFilmId(Integer filmId, Integer count) {
-        containsFilm(filmId);
+        if (filmId > 0) {
+            containsFilm(filmId);
+        }
         log.info("Load review for film with id=" + filmId);
         List<Review> reviews = (filmId < 0)
                 ? repository.load(count)
