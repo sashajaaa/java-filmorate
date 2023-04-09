@@ -64,6 +64,7 @@ public class ReviewController {
         feedService.addFeed(Long.valueOf(updatedReview.getUserId()), Feed.EventType.REVIEW,
                 Feed.OperationType.UPDATE, Long.valueOf(updatedReview.getReviewId()));
         return ResponseEntity.ok(updatedReview);
+
     }
 
     @DeleteMapping("/{id}")
