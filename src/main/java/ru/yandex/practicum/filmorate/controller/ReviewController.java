@@ -12,24 +12,6 @@ import ru.yandex.practicum.filmorate.service.ReviewService;
 import javax.validation.Valid;
 import java.util.List;
 
-/**
- * ### API
- * `POST /reviews`
- * Добавление нового отзыва.
- * `PUT /reviews`
- * Редактирование уже имеющегося отзыва.
- * `DELETE /reviews/{id}`
- * Удаление уже имеющегося отзыва.
- * `GET /reviews/{id}`
- * Получение отзыва по идентификатору.
- * `GET /reviews?filmId={filmId}&count={count}`
- * Получение всех отзывов по идентификатору фильма, если фильм не указан то все. Если кол-во не указано то 10.
- * - `PUT /reviews/{id}/like/{userId}`  — пользователь ставит лайк отзыву.
- * - `PUT /reviews/{id}/dislike/{userId}`  — пользователь ставит дизлайк отзыву.
- * - `DELETE /reviews/{id}/like/{userId}`  — пользователь удаляет лайк/дизлайк отзыву.
- * - `DELETE /reviews/{id}/dislike/{userId}`  — пользователь удаляет дизлайк отзыву.
- */
-
 @RestController
 @RequestMapping("/reviews")
 @RequiredArgsConstructor

@@ -45,23 +45,7 @@ public class Film {
     @JsonIgnore
     private Set<Integer> likes = new HashSet<>();
 
-    public void addLike(Integer id) {
-        likes.add(id);
-    }
-
-    public void deleteLike(Integer id) {
-        likes.remove(id);
-    }
-
     public void addGenre(Genre genre) {
         genres.add(genre);
-    }
-
-    public void removeAllGenres() {
-        genres.clear();
-    }
-
-    public void removeGenre(Genre genre) {
-        genres.remove(genre);
     }
 }

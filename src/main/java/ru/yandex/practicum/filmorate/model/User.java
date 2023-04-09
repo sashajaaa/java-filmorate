@@ -36,12 +36,4 @@ public class User {
     private LocalDate birthday;
 
     private Set<Integer> likes;
-
-    public void addFriend(Integer id) {
-        friendIds.add(id);
-    }
-
-    public void deleteFriend(Integer id) {
-        friendIds.remove(id);
-    }
 }

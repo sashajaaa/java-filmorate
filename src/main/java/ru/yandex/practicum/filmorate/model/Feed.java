@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,13 +14,18 @@ import javax.validation.constraints.NotNull;
 public class Feed {
     @NotNull
     private Long timestamp;
+
     @NotNull
     private Long userId;
+
     @NotNull
     private EventType eventType;
+
     @NotNull
     private OperationType operation;
+
     private Long eventId;
+
     @NotNull
     private Long entityId;
 
@@ -37,7 +41,3 @@ public class Feed {
         UPDATE
     }
 }
-
-
-
-
