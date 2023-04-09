@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.storage.interfaces.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
@@ -23,7 +25,7 @@ public class FeedService {
         this.userStorage = userStorage;
     }
 
-    public Feed addFeed(Long userId, Feed.EventType eventType, Feed.OperationType operation, Long entityId) {
+    public Feed addFeed(Long userId, EventType eventType, OperationType operation, Long entityId) {
         Optional<Feed> feed = feedStorage.addFeed(userId, eventType, operation, entityId);
         if (feed.isEmpty()) {
             throw new RuntimeException("An error occurred while adding a feed event");
@@ -33,18 +35,15 @@ public class FeedService {
     }
 
     public List<Feed> getAllFeedByUserId(Long userId) {
-        throwUserNotFoundException(userId.intValue());
+        containsUser(userId.intValue());
         List<Feed> feed = feedStorage.getAllFeedByUserId(userId);
         log.info("All feed of user {} is returned", userId);
         return feed;
     }
 
-    private void throwUserNotFoundException(Integer userId) {
-        try {
-            userStorage.getById(userId);
-        } catch (Exception e) {
+    private void containsUser(Integer userId) {
+        if (!userStorage.containsUser(userId)) {
             throw new NotFoundException(String.format("User by id '%d' not found", userId));
         }
     }
-
 }

@@ -5,23 +5,25 @@ import java.util.Optional;
 
 public interface InteractionReviewRepository<I, T> {
 
-	Optional<T> unload(T review);
+    Optional<T> unload(T review);
 
-	T update(T t);
+    T update(T t);
 
-	T remove(I id);
+    T remove(I id);
 
-	T findById(I id);
+    T findById(I id);
 
-	List<T> load(I count);
+    boolean containsReview(I id);
 
-	List<T> load(I id, I count);
+    List<T> load(I count);
 
-	T like(I to, I from);
+    List<T> load(I id, I count);
 
-	T dislike(I to, I from);
+    T like(I to, I from);
 
-	T removeLike(I to, I from);
+    T dislike(I to, I from);
 
-	T removeDislike(I to, I from);
+    T removeLike(I to, I from);
+
+    T removeDislike(I to, I from);
 }

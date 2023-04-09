@@ -28,16 +28,4 @@ public class Feed {
 
     @NotNull
     private Long entityId;
-
-    public enum EventType {
-        LIKE,
-        REVIEW,
-        FRIEND
-    }
-
-    public enum OperationType {
-        REMOVE,
-        ADD,
-        UPDATE
-    }
 }

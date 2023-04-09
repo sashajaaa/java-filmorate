@@ -20,7 +20,7 @@ public class GenreService {
     public Genre getGenreById(int id) {
         containsGenre(id);
         log.info("Request or genre with id=" + id);
-         return genreDbStorage.getGenreById(id);
+        return genreDbStorage.getGenreById(id);
     }
 
     public List<Genre> getAllGenres() {
@@ -28,9 +28,9 @@ public class GenreService {
         return genreDbStorage.getAllGenres();
     }
 
-   private void containsGenre(int id) {
-       if (!genreDbStorage.containsGenre(id)) {
-           throw new NotFoundException("Genre with id=" + id + " not found");
-       }
-   }
+    private void containsGenre(int id) {
+        if (!genreDbStorage.containsGenre(id)) {
+            throw new NotFoundException("Genre with id=" + id + " not found");
+        }
+    }
 }

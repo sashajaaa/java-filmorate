@@ -3,8 +3,17 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Feed;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.OperationType;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.FeedService;
 import ru.yandex.practicum.filmorate.service.ReviewService;
@@ -24,8 +33,8 @@ public class ReviewController {
     @PostMapping
     public ResponseEntity<Review> saveReview(@Valid @RequestBody Review review) {
         Review savedReview = reviewService.addReview(review);
-        feedService.addFeed(Long.valueOf(savedReview.getUserId()), Feed.EventType.REVIEW,
-                Feed.OperationType.ADD, Long.valueOf(savedReview.getReviewId()));
+        feedService.addFeed(Long.valueOf(savedReview.getUserId()), EventType.REVIEW,
+                OperationType.ADD, Long.valueOf(savedReview.getReviewId()));
         return ResponseEntity.ok(savedReview);
     }
 
@@ -43,16 +52,16 @@ public class ReviewController {
     @PutMapping
     public ResponseEntity<Review> updateReview(@Valid @RequestBody Review review) {
         Review updatedReview = reviewService.updateReview(review);
-        feedService.addFeed(Long.valueOf(updatedReview.getUserId()), Feed.EventType.REVIEW,
-                Feed.OperationType.UPDATE, Long.valueOf(updatedReview.getReviewId()));
+        feedService.addFeed(Long.valueOf(updatedReview.getUserId()), EventType.REVIEW,
+                OperationType.UPDATE, Long.valueOf(updatedReview.getReviewId()));
         return ResponseEntity.ok(updatedReview);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Review> removeReviewById(@PathVariable Integer id) {
         Review removedReview = reviewService.removeReviewById(id);
-        feedService.addFeed(Long.valueOf(removedReview.getUserId()), Feed.EventType.REVIEW,
-                Feed.OperationType.REMOVE, Long.valueOf(removedReview.getReviewId()));
+        feedService.addFeed(Long.valueOf(removedReview.getUserId()), EventType.REVIEW,
+                OperationType.REMOVE, Long.valueOf(removedReview.getReviewId()));
         return ResponseEntity.ok(removedReview);
     }
 
