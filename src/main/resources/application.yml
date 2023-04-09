@@ -7,6 +7,7 @@ spring:
       - classpath:application-director.yml
       - classpath:application-review.yml
       - classpath:application-film.yml
+      - classpath:application-feed.yml
   jackson:
     serialization:
       write-durations-as-timestamps: true
