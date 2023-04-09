@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
@@ -30,7 +31,7 @@ public class FilmService {
     private final DirectorStorage directorStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage, DirectorStorage directorStorage) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage, DirectorStorage directorStorage, FeedService feedService) {
         this.userStorage = userStorage;
         this.filmStorage = filmStorage;
         this.directorStorage = directorStorage;
@@ -95,6 +96,7 @@ public class FilmService {
         containsUser(userId);
         filmStorage.removeLike(filmId, userId);
         log.info("Like successfully removed");
+
     }
 
     public List<Film> getPopular(Integer count, Integer genreId, Integer year) {

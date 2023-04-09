@@ -12,3 +12,13 @@ MERGE INTO rating_mpa (rating_id, rating_name)
            (3, 'PG-13'),
            (4, 'R'),
            (5, 'NC-17');
+
+MERGE INTO event_type (event_type_id, event_type_name)
+   VALUES (1, 'LIKE'),
+          (2, 'REVIEW'),
+          (3, 'FRIEND');
+
+MERGE INTO operation_type (operation_type_id, operation_type_name)
+ VALUES (1, 'REMOVE'),
+        (2, 'ADD'),
+        (3, 'UPDATE');

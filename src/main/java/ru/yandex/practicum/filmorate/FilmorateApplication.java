@@ -10,7 +10,10 @@ public class FilmorateApplication {
 	}
 }
 
-/*DROP TABLE IF EXISTS film_genres;
+/*DROP TABLE IF EXISTS feed;
+DROP TABLE IF EXISTS event_type;
+DROP TABLE IF EXISTS operation_type;
+DROP TABLE IF EXISTS film_genres;
 DROP TABLE IF EXISTS friends;
 DROP TABLE IF EXISTS likes;
 DROP TABLE IF EXISTS genres;
