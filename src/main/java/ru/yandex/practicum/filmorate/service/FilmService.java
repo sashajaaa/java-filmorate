@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.SearchType;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
@@ -105,20 +106,17 @@ public class FilmService {
 
     public List<Film> search(String lookFor, String choose) {
         log.info("Request for get films by substring {}", lookFor);
-        int chooseId;
+        SearchType searchType;
         if (choose.contains("director")) {
             if (choose.contains("title")) {
-                chooseId = 3;
+                searchType = SearchType.EVERYWHERE;
             } else {
-                chooseId = 2;
+                searchType = SearchType.DIRECTOR;
             }
         } else {
-            chooseId = 1;
+            searchType = SearchType.TITLE;
         }
-        if (lookFor.isEmpty()) {
-            chooseId = 0;
-        }
-        return filmStorage.search(lookFor, chooseId);
+        return filmStorage.search(lookFor, searchType);
     }
 
     public List<Film> getCommonMovies(Integer userId, Integer friendId) {
