@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage.interfaces;
 import java.util.List;
 import java.util.Optional;
 
-public interface InteractionReviewRepository<I, T> {
+public interface InteractionReviewStorage<I, T> {
 
     Optional<T> unload(T review);
 
