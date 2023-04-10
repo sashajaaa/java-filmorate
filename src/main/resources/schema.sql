@@ -144,6 +144,6 @@ CREATE TABLE IF NOT EXISTS feed (
     entity_id BIGINT NOT NULL,
     user_id BIGINT REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
     event_type_id INT REFERENCES event_type(event_type_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    operation_type_id INT REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE
+    operation_type_id INT REFERENCES operation_type(operation_type_id) ON DELETE CASCADE ON UPDATE CASCADE
 
 );
