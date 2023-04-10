@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,8 +22,7 @@ import static java.util.Objects.requireNonNull;
 
 @Repository
 @RequiredArgsConstructor
-@Slf4j
-public class ReviewDBRepository implements InteractionReviewRepository<Integer, Review> {
+public class ReviewDBStorage implements InteractionReviewRepository<Integer, Review> {
 
     private final JdbcTemplate jdbcTemplate;
     private final ReviewQuery reviewQuery;
