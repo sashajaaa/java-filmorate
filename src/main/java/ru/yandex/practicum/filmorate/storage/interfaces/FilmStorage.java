@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.interfaces;
 
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.SearchType;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +23,7 @@ public interface FilmStorage extends LikesStorage {
 
     List<Film> getDirectorsFilms(int directorId, String sortBy);
 
-    List<Film> search(String lookFor, int choose);
+    List<Film> search(String lookFor, SearchType searchType);
 
     boolean containsFilm(int id);
 }

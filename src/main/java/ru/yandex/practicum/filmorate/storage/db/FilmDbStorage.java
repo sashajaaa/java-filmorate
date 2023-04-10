@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
+import ru.yandex.practicum.filmorate.model.SearchType;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
 
 import java.sql.PreparedStatement;
@@ -169,22 +170,23 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> search(String lookFor, int choose) {
+    public List<Film> search(String lookFor, SearchType searchType) {
         String query = "%" + lookFor.toLowerCase() + "%";
         SqlRowSet rs;
-        switch (choose) {
-            case FIND_WITH_EMPTY_QUERY:
-                rs = jdbcTemplate.queryForRowSet(requestForSearchAll);
-                break;
-            case FIND_IN_DIRECTOR:
-                rs = jdbcTemplate.queryForRowSet(requestForSearchInDirector, query);
-                break;
-            case FIND_IN_TITLE_AND_DIRECTOR:
-                rs = jdbcTemplate.queryForRowSet(requestForSearchInDirectorAndTitle, query, query);
-                break;
-            default:
-                rs = jdbcTemplate.queryForRowSet(requestForSearchInTitle, query);
-                break;
+        if (lookFor.isEmpty()) {
+            rs = jdbcTemplate.queryForRowSet(requestForSearchAll);
+        } else {
+            switch (searchType) {
+                case DIRECTOR:
+                    rs = jdbcTemplate.queryForRowSet(requestForSearchInDirector, query);
+                    break;
+                case EVERYWHERE:
+                    rs = jdbcTemplate.queryForRowSet(requestForSearchInDirectorAndTitle, query, query);
+                    break;
+                default:
+                    rs = jdbcTemplate.queryForRowSet(requestForSearchInTitle, query);
+                    break;
+            }
         }
         List<Film> films = new LinkedList<>();
         while (rs.next()) {
