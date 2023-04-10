@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.exception.BuildException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.interfaces.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.interfaces.InteractionReviewRepository;
+import ru.yandex.practicum.filmorate.storage.interfaces.InteractionReviewStorage;
 import ru.yandex.practicum.filmorate.storage.interfaces.UserStorage;
 
 import java.util.Collections;
@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 public class ReviewService {
 
-    private final InteractionReviewRepository<Integer, Review> repository;
+    private final InteractionReviewStorage<Integer, Review> repository;
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 

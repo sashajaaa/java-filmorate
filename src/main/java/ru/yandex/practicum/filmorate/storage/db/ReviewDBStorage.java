@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -9,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.BuildException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.sql_query.ReviewQuery;
-import ru.yandex.practicum.filmorate.storage.interfaces.InteractionReviewRepository;
+import ru.yandex.practicum.filmorate.storage.interfaces.InteractionReviewStorage;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,8 +22,7 @@ import static java.util.Objects.requireNonNull;
 
 @Repository
 @RequiredArgsConstructor
-@Slf4j
-public class ReviewDBRepository implements InteractionReviewRepository<Integer, Review> {
+public class ReviewDBStorage implements InteractionReviewStorage<Integer, Review> {
 
     private final JdbcTemplate jdbcTemplate;
     private final ReviewQuery reviewQuery;
@@ -127,6 +125,7 @@ public class ReviewDBRepository implements InteractionReviewRepository<Integer, 
         return positiveDeterminant(to);
     }
 
+    @Override
     public Review findById(Integer id) {
         return jdbcTemplate.query(reviewQuery.getSelectReviewById(),
                 ps -> ps.setInt(1, id),
