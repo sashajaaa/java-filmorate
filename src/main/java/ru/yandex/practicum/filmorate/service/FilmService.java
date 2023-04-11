@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -124,15 +125,11 @@ public class FilmService {
         containsUser(friendId);
         Set<Integer> userLikes = userStorage.getById(userId).getLikes();
         Set<Integer> friendLikes = userStorage.getById(friendId).getLikes();
-        List<Film> commonMovies = new ArrayList<>();
-        for (Integer filmId : userLikes) {
-            if (friendLikes.contains(filmId)) {
-                commonMovies.add(filmStorage.getById(filmId));
-            }
-        }
-        if (commonMovies.size() > 1) {
-            commonMovies.sort((o1, o2) -> o2.getLikes().size() - o1.getLikes().size());
-        }
+        List<Film> commonMovies = userLikes.stream()
+                .filter(filmId-> friendLikes.contains(filmId))
+                .map(filmId -> getById(filmId))
+                .sorted((o1, o2) -> o1.getLikes().size() > o2.getLikes().size() ? 1 : -1)
+                .collect(Collectors.toList());
         log.info("Getting the common movies for users with id = " + userId + " and " + friendId);
         return commonMovies;
     }
