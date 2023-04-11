@@ -519,7 +519,7 @@ refactor:
 -Переработан метод delete в классе UserDbStorage и UserService;  
 -Испаравлена ER-диаграмма.  
 
--fix:  
+fix:  
 -Исправлена ошибка в методе DeleteById в классе FilmController;  
 -Исправлена ошибка в методе DeleteById в классе UserController.  
 

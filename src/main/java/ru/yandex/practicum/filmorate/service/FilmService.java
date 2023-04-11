@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -126,7 +126,7 @@ public class FilmService {
         Set<Integer> userLikes = userStorage.getById(userId).getLikes();
         Set<Integer> friendLikes = userStorage.getById(friendId).getLikes();
         List<Film> commonMovies = userLikes.stream()
-                .filter(filmId-> friendLikes.contains(filmId))
+                .filter(filmId -> friendLikes.contains(filmId))
                 .map(filmId -> getById(filmId))
                 .sorted((o1, o2) -> o1.getLikes().size() > o2.getLikes().size() ? 1 : -1)
                 .collect(Collectors.toList());
