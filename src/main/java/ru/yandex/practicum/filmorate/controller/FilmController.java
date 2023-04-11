@@ -66,13 +66,17 @@ public class FilmController {
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.addLike(id, userId);
-        feedService.addFeed(Long.valueOf(userId), EventType.LIKE, OperationType.ADD, Long.valueOf(id));
+        feedService.addFeed(userId, EventType.LIKE, OperationType.ADD, id);
     }
+    /*Для создания объекта feed необходимо указать его тип (REVIEW LIKE FRIEND)
+     и операцию (ADD REMOVE UPDATE), если 2 параметра я занимаю на айдишники,
+     на передачу "типа" и "операции" параметров не хватит. Оптимальнее создать 9 методов
+     для каждой комбинации "типа" и "операции"?*/
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.removeLike(id, userId);
-        feedService.addFeed(Long.valueOf(userId), EventType.LIKE, OperationType.REMOVE, Long.valueOf(id));
+        feedService.addFeed(userId, EventType.LIKE, OperationType.REMOVE, id);
     }
 
     @GetMapping("/popular")

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistsException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 
@@ -20,12 +21,14 @@ public class DirectorService {
     }
 
     public Director addDirector(Director director) {
+        containsSameDirector(director);
         log.info("Director added: " + director);
         return directorStorage.addDirector(director);
     }
 
     public Director updateDirector(Director director) {
         containsDirector(director.getId());
+        containsSameDirector(director);
         log.info("Director updated: " + director);
         return directorStorage.updateDirector(director);
     }
@@ -52,9 +55,16 @@ public class DirectorService {
         return directorStorage.getAllDirectors();
     }
 
-    public void containsDirector(int id) {
+    private void containsDirector(int id) {
         if (!directorStorage.containsDirector(id)) {
             throw new NotFoundException("Director with id=" + id + " is absent");
         }
     }
+
+    private void containsSameDirector(Director director){
+        if (directorStorage.isPresentInDb(director)) {
+            throw new ObjectAlreadyExistsException("Director already exists");
+        }
+    }
+
 }

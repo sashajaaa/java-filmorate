@@ -25,17 +25,15 @@ public class FeedService {
         this.userStorage = userStorage;
     }
 
-    public Feed addFeed(Long userId, EventType eventType, OperationType operation, Long entityId) {
+    public Feed addFeed(Integer userId, EventType eventType, OperationType operation, Integer entityId) {
         Optional<Feed> feed = feedStorage.addFeed(userId, eventType, operation, entityId);
-        if (feed.isEmpty()) {
-            throw new RuntimeException("An error occurred while adding a feed event");
-        }
-        log.info("feed added {}", feed.get());
-        return feed.get();
+        log.info("feed added {}", feed);
+        return Optional.of(feed).get().orElseThrow(
+                ()->new RuntimeException("An error occurred while adding a feed event"));
     }
 
-    public List<Feed> getAllFeedByUserId(Long userId) {
-        containsUser(userId.intValue());
+    public List<Feed> getAllFeedByUserId(Integer userId) {
+        containsUser(userId);
         List<Feed> feed = feedStorage.getAllFeedByUserId(userId);
         log.info("All feed of user {} is returned", userId);
         return feed;
