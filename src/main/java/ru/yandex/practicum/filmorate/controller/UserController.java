@@ -65,15 +65,15 @@ public class UserController {
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.addFriend(id, friendId);
-        feedService.addFeed(Long.valueOf(id), EventType.FRIEND,
-                OperationType.ADD, Long.valueOf(friendId));
+        feedService.addFeed(id, EventType.FRIEND,
+                OperationType.ADD, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void removeFriend(@PathVariable Integer id, @PathVariable Integer friendId) {
         userService.removeFriend(id, friendId);
-        feedService.addFeed(Long.valueOf(id), EventType.FRIEND,
-                OperationType.REMOVE, Long.valueOf(friendId));
+        feedService.addFeed(id, EventType.FRIEND,
+                OperationType.REMOVE, friendId);
     }
 
     @GetMapping("/{id}/friends")
@@ -92,7 +92,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/feed")
-    public List<Feed> getAllFeedByUserId(@PathVariable Long id) {
+    public List<Feed> getAllFeedByUserId(@PathVariable Integer id) {
         log.info("User's {} feed is requested", id);
         return feedService.getAllFeedByUserId(id);
     }

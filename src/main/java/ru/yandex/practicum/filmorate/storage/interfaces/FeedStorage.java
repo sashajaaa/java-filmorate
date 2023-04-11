@@ -10,9 +10,9 @@ import java.util.Optional;
 
 public interface FeedStorage {
 
-    Optional<Feed> addFeed(Long userId, EventType eventType, OperationType operation, Long entityId);
+    Optional<Feed> addFeed(Integer userId, EventType eventType, OperationType operation, Integer entityId);
 
-    List<Feed> getAllFeedByUserId(Long userId);
+    List<Feed> getAllFeedByUserId(Integer userId);
 
-    Optional<Feed> getFeedByTimeStamp(Instant timeStamp);
+    Optional<Feed> getFeedByTimeStamp(Long timeStamp);
 }

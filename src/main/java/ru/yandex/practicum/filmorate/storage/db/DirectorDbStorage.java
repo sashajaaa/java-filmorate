@@ -5,15 +5,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ObjectAlreadyExistsException;
+import ru.yandex.practicum.filmorate.exception.BuildException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.interfaces.DirectorStorage;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -25,12 +30,12 @@ public class DirectorDbStorage implements DirectorStorage {
     private String requestInsertDirector;
     @Value("${director.get-director-by-id}")
     private String requestGetDirectorById;
-    @Value("${director.get-all-IDs}")
-    private String requestAllIDs;
+    @Value("${director.get-all-directors}")
+    private String requestAllDirectors;
+    @Value("${director.delete-all-directors}")
+    private String requestDeleteAllDirectors;
     @Value("${director.delete-director-by-id}")
     private String requestDeleteById;
-    @Value("${director.reset-primary-key}")
-    private String requestResetPK;
     @Value("${director.update-director}")
     private String requestUpdateDirector;
 
@@ -40,84 +45,74 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Director addDirector(Director director) {
-        if (isPresentInDB(director)) {
-            throw new ObjectAlreadyExistsException("Unable to add director: director already exists");
-        }
-        jdbcTemplate.update(requestInsertDirector, director.getName());
-        SqlRowSet idRow = getIdRowsFromDB(director);
-        if (idRow.next()) {
-            director.setId(idRow.getInt("director_id"));
-        }
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(requestInsertDirector, new String[]{"director_id"});
+            ps.setString(1, director.getName());
+            return ps;
+        }, keyHolder);
+        director.setId(keyHolder.getKey().intValue());
         return director;
     }
 
     @Override
     public List<Director> getAllDirectors() {
-        List<Director> directors = new ArrayList<>();
-        SqlRowSet idsRow = jdbcTemplate.queryForRowSet(requestAllIDs);
-        while (idsRow.next()) {
-            Integer id = idsRow.getInt("director_id");
-            directors.add(getDirectorById(id));
+        Map<Integer, Director> directors = new LinkedHashMap<>();
+        jdbcTemplate.query(requestAllDirectors,
+                rs -> {
+                    int id = rs.getInt("director_id");
+                    directors.computeIfAbsent(id, m -> collectDirector(rs));
+                });
+        return new ArrayList<>(directors.values());
+    }
+
+    private Director collectDirector(ResultSet rs) {
+        Director director;
+        try {
+            director = Director.builder()
+                    .name(rs.getString("director_name"))
+                    .id(rs.getInt("director_id"))
+                    .build();
+        } catch (Exception e) {
+            throw new BuildException("An error occurred while assembling the director");
         }
-        return directors;
+        return director;
     }
 
     @Override
     public Director getDirectorById(Integer id) {
 
-        SqlRowSet directorRow = getDirectorRowByID(id);
-        if (!directorRow.next()) {
-            throw new NotFoundException("Unable to return director: director is not found");
-        }
-        Director director = buildDirectorFromRow(directorRow);
-        return director;
+        return jdbcTemplate.query(requestGetDirectorById,
+                ps -> ps.setInt(1, id),
+                rs -> {
+                    if (rs.next()) {
+                        return collectDirector(rs);
+                    } else {
+                        return null;
+                    }
+                }
+        );
+
     }
 
     @Override
     public Director updateDirector(Director director) {
-
-        if (!isPresentInDB(director.getId())) {
-            throw new NotFoundException("Unable to update director: director is not found");
-        }
-        if (isPresentInDB(director)) {
-            throw new NotFoundException("Unable to update director: director is not found");
-        }
-        Director bufferDirector = getDirectorById(director.getId());
-        try {
-            jdbcTemplate.update(requestUpdateDirector, director.getName(), director.getId());
-        } catch (DataIntegrityViolationException | BadSqlGrammarException ex) {
-            updateDirector(bufferDirector);
-            throw new RuntimeException("SQL exception");
-        }
-        Director updatedDirector = getDirectorById(director.getId());
-        return updatedDirector;
+        jdbcTemplate.update(requestUpdateDirector, director.getName(), director.getId());
+        return getDirectorById(director.getId());
     }
 
     @Override
     public Director deleteDirectorById(Integer id) {
 
-        SqlRowSet directorRow = getDirectorRowByID(id);
-        if (!directorRow.next()) {
-            throw new NotFoundException("Unable to delete director: director is not found");
-        }
-        Director removedDirector = Director.builder()
-                .id(directorRow.getInt("director_id"))
-                .name(directorRow.getString("director_name"))
-                .build();
+        Director removedDirector = getDirectorById(id);
         jdbcTemplate.execute(requestDeleteById + id);
-        if (getAllDirectors().isEmpty()) {
-            jdbcTemplate.execute(requestResetPK);
-        }
         return removedDirector;
     }
 
     @Override
     public void deleteAllDirectors() {
-        SqlRowSet idsRow = jdbcTemplate.queryForRowSet(requestAllIDs);
-        while (idsRow.next()) {
-            jdbcTemplate.execute(requestDeleteById + idsRow.getInt("director_id"));
-        }
-        jdbcTemplate.execute(requestResetPK);
+        jdbcTemplate.execute(requestDeleteAllDirectors);
     }
 
     @Override
@@ -125,26 +120,8 @@ public class DirectorDbStorage implements DirectorStorage {
         return jdbcTemplate.queryForRowSet(requestGetDirectorById, id).next();
     }
 
-    private Director buildDirectorFromRow(SqlRowSet row) {
-        return Director.builder()
-                .name(row.getString("director_name"))
-                .id(row.getInt("director_id"))
-                .build();
+    public boolean isPresentInDb(Director director) {
+        return jdbcTemplate.queryForRowSet(requestGetIdByDirector, director.getName()).next();
     }
 
-    private boolean isPresentInDB(Director director) {
-        return getIdRowsFromDB(director).next();
-    }
-
-    private boolean isPresentInDB(Integer id) {
-        return getDirectorRowByID(id).next();
-    }
-
-    private SqlRowSet getDirectorRowByID(Integer id) {
-        return jdbcTemplate.queryForRowSet(requestGetDirectorById, id);
-    }
-
-    private SqlRowSet getIdRowsFromDB(Director director) {
-        return jdbcTemplate.queryForRowSet(requestGetIdByDirector, director.getName());
-    }
 }
