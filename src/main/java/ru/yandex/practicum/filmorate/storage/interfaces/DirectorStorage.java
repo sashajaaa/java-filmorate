@@ -18,4 +18,6 @@ public interface DirectorStorage {
     void deleteAllDirectors();
 
     boolean containsDirector(int id);
+
+    boolean isPresentInDb(Director director);
 }

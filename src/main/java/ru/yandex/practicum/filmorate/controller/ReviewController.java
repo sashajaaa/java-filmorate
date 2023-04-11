@@ -31,8 +31,8 @@ public class ReviewController {
     @PostMapping
     public ResponseEntity<Review> saveReview(@Valid @RequestBody Review review) {
         Review savedReview = reviewService.addReview(review);
-        feedService.addFeed(Long.valueOf(savedReview.getUserId()), EventType.REVIEW,
-                OperationType.ADD, Long.valueOf(savedReview.getReviewId()));
+        feedService.addFeed(savedReview.getUserId(), EventType.REVIEW,
+                OperationType.ADD, savedReview.getReviewId());
         return ResponseEntity.ok(savedReview);
     }
 
@@ -50,16 +50,16 @@ public class ReviewController {
     @PutMapping
     public ResponseEntity<Review> updateReview(@Valid @RequestBody Review review) {
         Review updatedReview = reviewService.updateReview(review);
-        feedService.addFeed(Long.valueOf(updatedReview.getUserId()), EventType.REVIEW,
-                OperationType.UPDATE, Long.valueOf(updatedReview.getReviewId()));
+        feedService.addFeed(updatedReview.getUserId(), EventType.REVIEW,
+                OperationType.UPDATE, updatedReview.getReviewId());
         return ResponseEntity.ok(updatedReview);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Review> removeReviewById(@PathVariable Integer id) {
         Review removedReview = reviewService.removeReviewById(id);
-        feedService.addFeed(Long.valueOf(removedReview.getUserId()), EventType.REVIEW,
-                OperationType.REMOVE, Long.valueOf(removedReview.getReviewId()));
+        feedService.addFeed(removedReview.getUserId(), EventType.REVIEW,
+                OperationType.REMOVE, removedReview.getReviewId());
         return ResponseEntity.ok(removedReview);
     }
 

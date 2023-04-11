@@ -36,11 +36,11 @@ public class FeedDbStorage implements FeedStorage {
     private String requestGetAllFeedOfUser;
 
     @Override
-    public Optional<Feed> addFeed(Long userId, EventType eventType, OperationType operation, Long entityId) {
+    public Optional<Feed> addFeed(Integer userId, EventType eventType, OperationType operation, Integer entityId) {
 
-        Instant timeStamp = Instant.now();
+        Long timeStamp = Instant.now().toEpochMilli();
         jdbcTemplate.update(requestAddFeed,
-                timeStamp.toEpochMilli(),
+                timeStamp,
                 entityId,
                 userId,
                 eventType.ordinal() + 1,
@@ -50,7 +50,7 @@ public class FeedDbStorage implements FeedStorage {
     }
 
     @Override
-    public List<Feed> getAllFeedByUserId(Long userId) {
+    public List<Feed> getAllFeedByUserId(Integer userId) {
         Map<Long, Feed> feedMap = new LinkedHashMap<>();
 
         jdbcTemplate.query(requestGetAllFeedOfUser,
@@ -67,9 +67,9 @@ public class FeedDbStorage implements FeedStorage {
         try {
             feed = Feed.builder()
                     .timestamp(rs.getLong("event_timestamp"))
-                    .entityId(rs.getLong("entity_id"))
-                    .eventId(rs.getLong("event_id"))
-                    .userId(rs.getLong("user_id"))
+                    .entityId(rs.getInt("entity_id"))
+                    .eventId(rs.getInt("event_id"))
+                    .userId(rs.getInt("user_id"))
                     .eventType(EventType.valueOf(rs.getString("event_type_name")))
                     .operation(OperationType.valueOf(rs.getString("operation_type_name")))
                     .build();
@@ -81,15 +81,15 @@ public class FeedDbStorage implements FeedStorage {
 
 
     @Override
-    public Optional<Feed> getFeedByTimeStamp(Instant timeStamp) {
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(requestFindByTimeStamp, timeStamp.toEpochMilli());
+    public Optional<Feed> getFeedByTimeStamp(Long timeStamp) {
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(requestFindByTimeStamp, timeStamp);
 
         if (rowSet.next()) {
             Feed feed = Feed.builder()
                     .timestamp(rowSet.getLong("event_timestamp"))
-                    .entityId(rowSet.getLong("entity_id"))
-                    .eventId(rowSet.getLong("event_id"))
-                    .userId(rowSet.getLong("user_id"))
+                    .entityId(rowSet.getInt("entity_id"))
+                    .eventId(rowSet.getInt("event_id"))
+                    .userId(rowSet.getInt("user_id"))
                     .eventType(EventType.valueOf(rowSet.getString("event_type_name")))
                     .operation(OperationType.valueOf(rowSet.getString("operation_type_name")))
                     .build();

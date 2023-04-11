@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/directors")
 public class DirectorController {
-    public final DirectorService directorService;
+    private final DirectorService directorService;
 
     @Autowired
     public DirectorController(DirectorService directorService) {

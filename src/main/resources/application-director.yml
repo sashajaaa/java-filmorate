@@ -4,7 +4,6 @@ director:
   get-id-by-director: "SELECT director_id FROM directors WHERE director_name = ?"
   get-director-by-id : "SELECT * FROM directors WHERE director_id = ?"
   get-all-IDs: "SELECT director_id FROM directors"
-  reset-primary-key: "ALTER TABLE directors ALTER COLUMN director_id RESTART WITH 1"
   update-director: "UPDATE directors SET director_name = ? WHERE director_id = ?"
   get-filmsId-sorted-by-likes: "SELECT FILMS_DIRECTORS.film_id
     FROM FILMS_DIRECTORS
@@ -18,8 +17,8 @@ director:
     GROUP BY films.FILM_ID
     HAVING FILMS_DIRECTORS.DIRECTOR_ID = ?
     ORDER BY films.RELEASE_DATE;"
-
-
+  get-all-directors: "SELECT * FROM directors"
+  delete-all-directors: "DELETE FROM directors"
 
 
 

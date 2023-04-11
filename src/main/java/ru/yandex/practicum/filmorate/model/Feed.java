@@ -16,7 +16,7 @@ public class Feed {
     private Long timestamp;
 
     @NotNull
-    private Long userId;
+    private Integer userId;
 
     @NotNull
     private EventType eventType;
@@ -24,8 +24,8 @@ public class Feed {
     @NotNull
     private OperationType operation;
 
-    private Long eventId;
+    private Integer eventId;
 
     @NotNull
-    private Long entityId;
+    private Integer entityId;
 }
