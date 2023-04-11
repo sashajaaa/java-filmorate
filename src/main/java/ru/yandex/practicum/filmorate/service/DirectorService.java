@@ -61,7 +61,7 @@ public class DirectorService {
         }
     }
 
-    private void containsSameDirector(Director director){
+    private void containsSameDirector(Director director) {
         if (directorStorage.isPresentInDb(director)) {
             throw new ObjectAlreadyExistsException("Director already exists");
         }

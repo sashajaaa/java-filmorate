@@ -29,7 +29,7 @@ public class FeedService {
         Optional<Feed> feed = feedStorage.addFeed(userId, eventType, operation, entityId);
         log.info("feed added {}", feed);
         return Optional.of(feed).get().orElseThrow(
-                ()->new RuntimeException("An error occurred while adding a feed event"));
+                () -> new RuntimeException("An error occurred while adding a feed event"));
     }
 
     public List<Feed> getAllFeedByUserId(Integer userId) {

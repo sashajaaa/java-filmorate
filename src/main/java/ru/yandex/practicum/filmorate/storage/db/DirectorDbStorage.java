@@ -48,7 +48,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(requestInsertDirector,new String[]{"director_id"});
+            PreparedStatement ps = connection.prepareStatement(requestInsertDirector, new String[]{"director_id"});
             ps.setString(1, director.getName());
             return ps;
         }, keyHolder);
