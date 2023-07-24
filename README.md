@@ -12,8 +12,7 @@
 - Добавление пользовательских отзывов на фильмы
 
 ## Как использовать:
-mvn clean package  
-docker-compose up -d  
+run `FilmorateApplication`
 
 ## Спринт №9
 <details> <summary> Техническое задание </summary>  
